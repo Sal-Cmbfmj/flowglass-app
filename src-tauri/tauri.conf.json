@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Flowglass",
+  "version": "0.1.0",
+  "identifier": "com.salcmbfmj.flowglass",
+  "build": {
+    "beforeDevCommand": "PORT=5173 pnpm dev",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Flowglass",
+        "width": 780,
+        "height": 540,
+        "minWidth": 780,
+        "minHeight": 540,
+        "resizable": true,
+        "center": true
+      },
+      {
+        "label": "widget",
+        "url": "widget.html",
+        "width": 240,
+        "height": 308,
+        "decorations": false,
+        "transparent": true,
+        "backgroundColor": "#00000000",
+        "alwaysOnTop": true,
+        "resizable": false,
+        "skipTaskbar": true,
+        "shadow": false,
+        "acceptFirstMouse": true,
+        "x": 100,
+        "y": 120
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app", "dmg"],
+    "icon": ["icons/icon.icns", "icons/icon.png"]
+  }
+}
