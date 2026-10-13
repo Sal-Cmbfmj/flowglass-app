@@ -62,3 +62,7 @@ Web 预览没有原生拖动/Dock 行为，Web 与桌面存储互相独立。mac
 欢迎提交带版本、系统、操作步骤的 Issue；请勿上传私人信息。参见 [贡献说明](docs/CONTRIBUTING.md)。
 
 MIT，见 [LICENSE](LICENSE)。依赖仍遵循各自许可证。图标为 AI 辅助生成，界面起始于 Figma Make 导出并继续开发。
+
+## 需求与验收
+
+当前移植规则为FG-MVP-1.1：[需求入口](docs/requirements/00-开发与验收入口.md)，[完成提示修复记录](docs/COMPLETION-0.1.1.md)。Intel/Windows开发请补测FG-057至059。
