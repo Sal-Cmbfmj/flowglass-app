@@ -1030,6 +1030,9 @@ footer strong {
 
 body:has(#widget-root) {
   display: block;
+  min-width: 0;
+  width: 100%;
+  place-items: normal;
   min-height: 100vh;
   padding: 0;
   background: transparent;
