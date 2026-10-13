@@ -4,6 +4,8 @@
 
 **当前为早期试用版，已提供的测试包仅适用于 Apple Silicon Mac。** Intel Mac 与 Windows 尚未完成构建和实机验证，不代表框架只支持 Apple Silicon。预览包未完成 Developer ID 签名或公证。
 
+当前源码版本 **0.1.1**：修复 Mini 在最后一秒切换“完成”时的文字残影风险。
+
 ## 能做什么
 
 - 主面板 + 置顶 Mini 浮窗，共享倒计时状态。

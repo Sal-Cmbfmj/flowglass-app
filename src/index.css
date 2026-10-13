@@ -1081,6 +1081,13 @@ body:has(#widget-root) {
 }
 
 .w-time {
+  display: grid;
+  place-items: center;
+  width: 140px;
+  height: 34px;
+  flex: 0 0 34px;
+  isolation: isolate;
+  contain: layout paint;
   color: var(--sand);
   font-size: 26px;
   font-weight: 500;
@@ -1094,7 +1101,7 @@ body:has(#widget-root) {
   filter: drop-shadow(0 0 16px color-mix(in srgb, var(--sand) 55%, transparent));
 }
 
-.w-time.pulse {
+.w-finished {
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 0.3em;
@@ -1103,8 +1110,9 @@ body:has(#widget-root) {
 }
 
 @keyframes w-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.45; }
+  /* 颜色重绘而非 opacity 合成层，避免旧数字字形残影。 */
+  0%, 100% { color: var(--sand); }
+  50% { color: color-mix(in srgb, var(--sand) 45%, transparent); }
 }
 
 .w-dots {
@@ -1174,7 +1182,7 @@ body:has(#widget-root) {
 
 @media (prefers-reduced-motion: reduce) {
   .hg-tilt, .hg-pause, .fg-widget { transition-duration: 0.01ms !important; }
-  .w-time.pulse { animation: none; }
+  .w-finished { animation: none; }
 }
 
 html:has(#widget-root) {

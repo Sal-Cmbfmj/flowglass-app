@@ -309,7 +309,14 @@ function Widget() {
         </div>
       </div>
 
-      <div className={`w-time ${finished ? "pulse" : ""}`}>{finished ? "完成" : `${minutes}:${seconds}`}</div>
+      {/* 完成切换必须卸载数字节点；透明 WebView 不复用旧字形图层。 */}
+      <div className="w-time" data-state={finished ? "finished" : "countdown"}>
+        {finished ? (
+          <span key="finished" className="w-finished" role="status" aria-live="polite">完成</span>
+        ) : (
+          <span key="countdown" className="w-countdown" role="timer">{`${minutes}:${seconds}`}</span>
+        )}
+      </div>
 
       <div className={`w-dots ${hover || menuOpen ? "show" : ""}`}>
         {(["focus", "break"] as TimerMode[]).map((m) => (
