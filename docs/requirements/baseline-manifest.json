@@ -27,5 +27,12 @@
   "source_archive_sha256": "5f8525e90ac99736546cd19080e020e04155e4e51d407a54d9f4a128afd0d500",
   "requirement_ids": 22,
   "binary_build_commit_provenance": "Built in public source checkout; corresponding core file hashes verified; reproducible build not asserted",
-  "baseline_test_package": "Flowglass_0.1.1_arm64.zip"
+  "baseline_test_package": "Flowglass_0.1.1_arm64.zip",
+  "local_install_verification": {
+    "version": "0.1.1",
+    "canonical_running_process_verified": true,
+    "installed_binary_sha256": "f33c63881bc4dc71f6758c684688dc5cc8d5509b751979dfdeb2f1e50ddc4654",
+    "user_data_cleared": false,
+    "native_completion_visual_verified": false
+  }
 }
