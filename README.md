@@ -2,7 +2,7 @@
 
 一个安静陪伴专注的桌面小工具：主面板看时间，Mini 沙漏留在桌面。暖色界面、流沙动画，以及专注/休息的轻量切换。
 
-**当前为早期试用版，已提供的测试包仅适用于 Apple Silicon Mac。** Intel Mac 与 Windows 尚未完成构建和实机验证，不代表框架只支持 Apple Silicon。预览包未完成 Developer ID 签名或公证。
+**当前为早期试用版，测试包覆盖 Apple Silicon Mac 与 Intel Mac。** Windows 适配另行开发中。Intel 包由与 0.1.1 基线完全相同的源码以 `x86_64-apple-darwin` 目标构建（见 [Intel 构建说明](docs/BUILD-macos-intel.md)）；Intel 实机验收尚未完成。预览包未完成 Developer ID 签名或公证。
 
 当前源码版本 **0.1.1**：修复 Mini 在最后一秒切换“完成”时的文字残影风险。
 
