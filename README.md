@@ -2,7 +2,7 @@
 
 一个安静陪伴专注的桌面小工具：主面板看时间，Mini 沙漏留在桌面。暖色界面、流沙动画，以及专注/休息的轻量切换。
 
-**当前为早期试用版，已提供的测试包仅适用于 Apple Silicon Mac。** Intel Mac 与 Windows 尚未完成构建和实机验证，不代表框架只支持 Apple Silicon。预览包未完成 Developer ID 签名或公证。
+**当前为早期试用版，测试包覆盖 Apple Silicon Mac 与 Intel Mac。** Windows 适配已完成开发（本分支源码），NSIS 安装包需在 Windows 实机构建与验收，尚未交付。预览包未完成 Developer ID 签名或公证。
 
 当前源码版本 **0.1.1**：修复 Mini 在最后一秒切换“完成”时的文字残影风险。
 
@@ -12,7 +12,7 @@
 - 自定义专注/休息时长；设置只影响下一轮。
 - Mini 单击开始/暂停，双击切换且待开始，拖动移动，右键查看更多操作。
 - 专注轮数与近 7 天记录：提前结束也记一轮，时长只累计实际投入。
-- 主面板等比例放大；关闭主窗口为隐藏，点击 Dock 图标恢复。
+- 主面板等比例放大；关闭主窗口为隐藏：macOS 点 Dock 图标恢复，Windows 由系统托盘恢复（左键托盘或菜单「显示主面板」；托盘菜单「退出 Flowglass」彻底退出）。
 
 ## 普通用户
 
@@ -34,7 +34,7 @@ pnpm test                # 隔离计时和菜单事件回归
 pnpm tauri build --bundles app  # macOS 应用包
 ```
 
-Web 预览没有原生拖动/Dock 行为，Web 与桌面存储互相独立。macOS App/DMG 配置目前是默认目标；Windows 移植需调整安装目标和窗口恢复入口。
+Web 预览没有原生拖动/Dock/托盘行为，Web 与桌面存储互相独立。macOS 默认产出 App/DMG；Windows 通过 `tauri.windows.conf.json` 产出 NSIS 安装器（双击识别时长读取系统设置，缺失 WebView2 时安装器联网引导安装），详见 [Windows 构建说明](docs/BUILD-windows.md)。
 
 ## 结构
 
