@@ -69,6 +69,10 @@ Platform guides: [macOS Intel build](docs/BUILD-macos-intel.md) · [Windows buil
 - No transaction guarantees for two windows writing at the exact same instant (normal serial operations are deduplicated).
 - The Windows NSIS installer is currently cross-compiled from macOS (experimental). Native Windows builds are preferred and documented.
 
+## Requirements & acceptance
+
+Porting/acceptance rules follow the FG-MVP requirement pack (Chinese): entry doc in `docs/requirements/`, completion-rendering record in [docs/COMPLETION-0.1.1.md](docs/COMPLETION-0.1.1.md). Intel/Windows ports should re-test FG-057~059.
+
 ## License
 
 MIT — see [LICENSE](LICENSE). Icon is AI-assisted; the UI started from a Figma Make export and evolved.
@@ -137,6 +141,10 @@ pnpm tauri build         # 构建当前平台安装包
 - 倒计时基于墙钟推导，修改系统时间会影响显示。
 - 双窗口同一瞬间并发写入不做事务保障（常规串行操作已去重）。
 - Windows NSIS 安装器目前为 macOS 交叉构建（实验性），建议按文档在 Windows 原生构建。
+
+## 需求与验收
+
+当前移植规则为 FG-MVP 系列（中文）：入口见 `docs/requirements/`，完成提示修复记录见 [docs/COMPLETION-0.1.1.md](docs/COMPLETION-0.1.1.md)。Intel/Windows 开发请补测 FG-057 至 059。
 
 ## 许可
 
