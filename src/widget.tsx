@@ -11,6 +11,7 @@ import {
   windowId,
   type TimerMode,
 } from "./timerStore";
+import { readLang, strings, subscribeLang } from "./i18n";
 import "./index.css";
 
 const COLORS: Record<TimerMode, string> = { focus: "#ff7048", break: "#59b9a5" };
@@ -156,7 +157,11 @@ function Widget() {
   const [hover, setHover] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [flips, setFlips] = useState(0);
+  const [lang, setLang] = useState(readLang);
+  const s = strings(lang);
   const dragRef = useRef<{ x: number; y: number; armed: boolean } | null>(null);
+
+  useEffect(() => subscribeLang(() => setLang(readLang())), []);
 
   useEffect(
     () =>
@@ -312,7 +317,7 @@ function Widget() {
       {/* 完成切换必须卸载数字节点；透明 WebView 不复用旧字形图层。 */}
       <div className="w-time" data-state={finished ? "finished" : "countdown"}>
         {finished ? (
-          <span key="finished" className="w-finished" role="status" aria-live="polite">完成</span>
+          <span key="finished" className="w-finished" role="status" aria-live="polite">{s.finished}</span>
         ) : (
           <span key="countdown" className="w-countdown" role="timer">{`${minutes}:${seconds}`}</span>
         )}
@@ -325,7 +330,7 @@ function Widget() {
             onDoubleClick={(e) => e.stopPropagation()}
             key={m}
             className={`w-dot ${m} ${m === mode ? "on" : ""}`}
-            title={m === "focus" ? "切换到专注" : "切换到休息"}
+            title={m === "focus" ? s.switchToFocus : s.switchToBreak}
             onClick={(e) => {
               e.stopPropagation();
               cancelClick();
@@ -339,12 +344,12 @@ function Widget() {
       {menuOpen && (
         <div ref={menuRef} className="w-menu" role="menu" onPointerDown={(e) => e.stopPropagation()} onDoubleClick={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); cancelClick(); dismissUntilRef.current = Date.now() + clickDelayRef.current; }}>
           <button onClick={() => { toggleRun(); setMenuOpen(false); }}>
-            {running ? "暂停" : paused ? "继续" : "开始"}
+            {running ? s.pause : paused ? s.resume : s.start}
           </button>
           <button onClick={() => { doSwitch(mode === "focus" ? "break" : "focus"); setMenuOpen(false); }}>
-            切换到{mode === "focus" ? "休息" : "专注"}
+            {mode === "focus" ? s.switchToBreakMenu : s.switchToFocusMenu}
           </button>
-          <button onClick={() => { resetCurrent(); setMenuOpen(false); }}>重置当前计时</button>
+          <button onClick={() => { resetCurrent(); setMenuOpen(false); }}>{s.resetTimer}</button>
         </div>
       )}
     </div>
