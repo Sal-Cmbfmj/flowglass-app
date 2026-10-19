@@ -6,6 +6,9 @@
   color: #40372f;
   background: #ded9d1;
   font-synthesis: none;
+  /* 2026-10-19 试用反馈：Mini 静置透明度太低（Windows 上几乎注意不到）。
+     UI-04 原值 0.58 → 0.72；回滚只需改回这一处。 */
+  --widget-quiet-opacity: 0.72;
 }
 
 * {
@@ -458,7 +461,6 @@ button:focus-visible {
 .widget-hint {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 14px;
   margin-top: 14px;
 }
@@ -471,9 +473,13 @@ button:focus-visible {
   letter-spacing: 0.1em;
 }
 
+/* 标题与面板其他行左对齐；四组手势在剩余空间内居中 */
 .widget-hint .hint-groups {
   display: flex;
+  flex: 1;
   align-items: center;
+  justify-content: center;
+  min-width: 0;
 }
 
 .widget-hint .hint-group {
@@ -845,7 +851,7 @@ footer strong {
   left: 38px;
   display: grid;
   grid-template-rows: 56px 70px minmax(0, 1fr);
-  gap: 12px;
+  gap: 18px; /* 2026-10-19 试用反馈：原 12px 标题/统计/图表过挤，UI-02 间距调整 */
   min-height: 0;
   animation: page-in 320ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
 }
@@ -1103,7 +1109,7 @@ body:has(#widget-root) {
   box-shadow:
     0 10px 24px rgba(58, 46, 36, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
-  opacity: 0.58;
+  opacity: var(--widget-quiet-opacity, 0.58);
   transform: scale(0.98);
   transition: opacity 320ms ease, transform 320ms cubic-bezier(0.2, 0.75, 0.3, 1);
   cursor: pointer;
