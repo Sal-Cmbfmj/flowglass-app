@@ -53,3 +53,24 @@ pnpm tauri build
   交互验收**；NSIS 安装包必须在 Windows 实机产出后才能交付。
 - 任务栏最小化/恢复、100/125/150/200% DPI 缩放、非焦点首击、右键菜单、拖动释放等
   用例需在 Windows 实机执行并记录证据。
+
+## 从 macOS 交叉构建（实验性，2026-10-19 已验证可产出安装器）
+
+在 Apple Silicon macOS 上安装 mingw-w64 与 makensis 后，可产出 x64 安装器：
+
+```bash
+rustup target add x86_64-pc-windows-gnu
+brew install mingw-w64 makensis
+pnpm tauri build --target x86_64-pc-windows-gnu   # 需 TAURI_NSIS_DIR=/opt/homebrew/share/nsis
+```
+
+产物：`src-tauri/target/x86_64-pc-windows-gnu/release/bundle/nsis/Flowglass_0.2.0_x64-setup.exe`
+
+注意事项（如实）：
+
+- Tauri CLI 明确警告「交叉编译是实验性的，不代表支持所有特性」。
+- windows-gnu 工具链动态链接 `WebView2Loader.dll`；已核实打包器会将 target 目录下的
+  该 DLL 一并装入安装器（7z 解包验证：flowglass.exe + WebView2Loader.dll 均在）。
+- 交叉构建产物**未经 Windows 实机运行验证**，仅供冒烟试用；正式交付仍优先在
+  Windows 实机用 msvc 工具链构建（见上文标准流程）。若交叉包在实机异常，以实机构建为准。
+- 嵌入式前端资源为压缩存储，`strings` 检索不到明文属正常现象。
