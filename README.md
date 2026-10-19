@@ -1,151 +1,93 @@
-# Flowglass · Hourglass Pomodoro Timer
+# Flowglass
 
-A quiet desktop companion for focused work: a main panel to watch the time, and a tiny always-on-top hourglass that stays on your desktop. Warm visuals, falling-sand animation, and a lightweight focus/break rhythm.
+A desktop Pomodoro timer with a little hourglass to keep you company.
 
-*English first · 中文说明见文末*
+Start a focus session, take a break, and keep the time in sight with Mini, a floating hourglass that stays above your other windows. Flowglass pairs warm, quiet visuals with a simple timer and a seven-day focus history.
 
-> Early beta. Packages are **unsigned** — see [Install notes](#install-notes) for Gatekeeper / SmartScreen guidance. Windows builds are cross-compiled and experimental.
+[Download 0.2.1](https://github.com/Sal-Cmbfmj/flowglass-app/releases/tag/v0.2.1) · [Installation](docs/INSTALL.md) · [Known issues](docs/KNOWN-ISSUES.md) · [中文说明](#中文说明)
 
-## Features
+![Flowglass 0.2.1 main window with focus and break controls](docs/images/main-0.2.1.png)
 
-- Main panel + always-on-top Mini widget sharing **one timer** (absolute-timestamp single source of truth — both windows always agree).
-- Focus / break modes; duration settings only affect the **next** round.
-- Mini gestures: **click** start/pause · **double-click** switch mode (idle) · **drag** to move · **right-click** for menu.
-- Focus rounds & 7-day history — rounds count when time was actually invested, interruptions included; minutes count only real running time, never paused waiting.
-- **English / 简体中文** interface, switchable in Settings (applies to both windows on save).
-- Proportional UI: resize the window and the whole layout scales together, no reflow or cropping.
+*Version 0.2.1 preview. The history shown in this image is example data.*
 
-## Downloads
+## Get started
 
-From [Releases](https://github.com/Sal-Cmbfmj/flowglass-app/releases):
+Choose a package from the [0.2.1 release](https://github.com/Sal-Cmbfmj/flowglass-app/releases/tag/v0.2.1). You do not need the “Source code” downloads to use the app.
 
-| Package | Platform |
+| Your computer | Choose the file ending in |
 | --- | --- |
-| `Flowglass_<v>_mac-arm64.zip` | macOS · Apple Silicon |
-| `Flowglass_<v>_mac-x64.zip` / `.dmg` | macOS · Intel |
-| `Flowglass_<v>_win-x64.exe` | Windows 10/11 x64 (experimental cross-build — see release notes) |
+| Mac with Apple silicon — M1, M2 and later | `mac-arm64_20261019.zip` |
+| Mac with an Intel processor | `mac-x64_20261019.zip` or `.dmg` |
+| Windows PC with an x64 processor | `win-x64_20261019.exe` — experimental build |
 
-## Privacy
+These are early, unsigned test packages. macOS may show a developer-verification warning; Windows may show a SmartScreen prompt. Read the [installation guide](docs/INSTALL.md) before opening the app. Compatibility testing is still limited, particularly on Intel Macs and Windows PCs.
 
-Flowglass keeps everything on your machine. Timer state, settings and the last 5000 session records live in the WebView's local storage — there are **no accounts, no cloud sync, no analytics and no telemetry**. Nothing is uploaded. (One network note: the stylesheet loads Google Fonts, so a font request may go out.)
+## A small tool for your focus sessions
 
-## Install notes
+- **Focus and break modes.** Set focus sessions from 1–120 minutes and breaks from 1–60 minutes. A session already started keeps its original length.
+- **A floating Mini.** Keep a small hourglass on the desktop while the main window is tucked away.
+- **A seven-day history.** See focus rounds and time recorded each day. Ending a focus session early still counts as a round if time was spent; paused time is excluded.
+- **English and 简体中文.** Choose a language in Settings and save to apply it to both windows. Some Windows system-menu labels are still in Chinese.
+- **Local records.** No account or cloud sync is needed.
 
-- **macOS (unsigned)**: first launch may warn "cannot verify developer". Confirm the download source, then System Settings → Privacy & Security → **Open Anyway**. Do not disable security settings wholesale.
-- **Windows**: SmartScreen may flag "unknown publisher" → More info → Run anyway. Requires WebView2 Runtime (the installer guides the download if missing). Closing the main window **hides** it — restore from the tray icon (left-click or menu); quit from the tray menu.
-- Details: [docs/INSTALL.md](docs/INSTALL.md).
+<img src="docs/images/mini-0.2.1.png" width="240" alt="Mini hourglass showing a 25-minute focus session">
 
-## Developer quickstart
+### Using Mini
 
-Node.js 22, pnpm 10, Rust stable, plus the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your platform.
-
-```bash
-pnpm install --frozen-lockfile
-pnpm dev                 # web preview on 8443; widget at /widget.html
-pnpm tauri dev           # desktop dev (5173)
-pnpm test                # isolated timer/menu regression
-pnpm check               # TypeScript
-pnpm tauri build         # native package for the host platform
-```
-
-Platform guides: [macOS Intel build](docs/BUILD-macos-intel.md) · [Windows build](docs/BUILD-windows.md)
-
-## Structure
-
-| Path | Purpose |
+| Gesture | Action |
 | --- | --- |
-| `src/App.tsx` | main window: timer, settings, history |
-| `src/widget.tsx` | Mini rendering, gestures and menu |
-| `src/timerStore.ts` | shared timer truth, frozen per-round duration, event log |
-| `src/i18n.ts` | zh/en strings and language persistence |
-| `src/index.css` | visual design and layout |
-| `src-tauri/` | Rust shell: windows, tray (Windows), platform behaviors |
-| `scripts/` | isolated regression checks |
+| Click | Start, pause or resume |
+| Double-click | Switch between focus and break, ready to start |
+| Drag | Move Mini |
+| Right-click | Open the timer menu |
 
-## Known limitations
+A click waits briefly so the app can distinguish it from a double-click. A completed round stays finished until you start another one; there is no automatic focus/break cycle or sound alert.
 
-- Unsigned & un-notarized; no notifications or sounds; no auto-start; no export.
-- Countdown derives from the wall clock; changing the system clock affects it.
-- No transaction guarantees for two windows writing at the exact same instant (normal serial operations are deduplicated).
-- The Windows NSIS installer is currently cross-compiled from macOS (experimental). Native Windows builds are preferred and documented.
+Closing the main window hides it. On macOS, click the Dock icon to reopen it and use **⌘Q** to quit. On Windows, use the tray icon to reopen it and the tray menu to quit or show Mini.
 
-## Requirements & acceptance
+## What to expect from this beta
 
-Porting/acceptance rules follow the FG-MVP requirement pack (Chinese): entry doc in `docs/requirements/`, completion-rendering record in [docs/COMPLETION-0.1.1.md](docs/COMPLETION-0.1.1.md). Intel/Windows ports should re-test FG-057~059.
+0.2.1 adds more room for the interface, clearer Mini visibility, and Windows Mini recovery controls. It follows the English/Chinese interface introduced in 0.2.0.
 
-## License
+There are a few known rough edges, including a language-draft issue when reopening Settings with a keyboard shortcut and a Settings panel that needs scrolling. See [known issues and workarounds](docs/KNOWN-ISSUES.md) before testing. The Windows package is cross-compiled from macOS; a full device and display-scaling compatibility matrix is not available yet.
 
-MIT — see [LICENSE](LICENSE). Icon is AI-assisted; the UI started from a Figma Make export and evolved.
+## Your data
+
+Settings, timer state and up to 5,000 session records are stored locally. Flowglass has no account system, analytics or timer-record uploads. It loads fonts from Google Fonts, which may make network requests; the Windows installer may also download WebView2 when it is missing.
+
+The timer uses elapsed wall-clock time: sleep or quitting the app does not pause a running session. There is no separate background reminder after you quit. Records stay on the current computer; there is no sync or export yet.
+
+## Feedback and development
+
+Found something unexpected? [Open an issue](https://github.com/Sal-Cmbfmj/flowglass-app/issues/new/choose) with your app version, operating system, processor, display scaling and steps to reproduce it. Screenshots help; please leave out private information.
+
+For source builds, tests and the project layout, start with the [developer guide](docs/DEVELOPMENT.md). [CHANGELOG.md](CHANGELOG.md) tracks version changes, and [contribution notes](docs/CONTRIBUTING.md) explain how to propose a change.
+
+MIT licensed — see [LICENSE](LICENSE). The icon was made with AI assistance. The interface began as a Figma Make export and has continued to evolve.
 
 ---
 
-# Flowglass · 沙漏番茄钟
+## 中文说明
 
-一个安静陪伴专注的桌面小工具：主面板看时间，Mini 沙漏留在桌面。暖色界面、流沙动画，以及专注/休息的轻量节奏。
+**Flowglass 是一个带桌面沙漏挂件的番茄钟。** 在主面板开始专注或休息，再让置顶的 Mini 留在桌面，随时看一眼剩余时间。它保留简单的计时操作，也记录近七天的专注轮数和时长。
 
-> 早期试用版。所有安装包**均未签名**，首次打开的引导见下方安装说明；Windows 包为交叉构建实验版。
+### 下载与使用
 
-## 功能
+前往 [0.2.1 下载页](https://github.com/Sal-Cmbfmj/flowglass-app/releases/tag/v0.2.1)，按电脑选择：M 系列 Mac 用 `mac-arm64`，Intel Mac 用 `mac-x64`，Windows x64 电脑用 `win-x64.exe`。**使用软件不需要下载 Source code，也不需要安装开发工具。**
 
-- 主面板 + 置顶 Mini 挂件共享**同一份计时真值**（绝对时间戳推导，两窗口永远一致）。
-- 专注 / 休息模式；设置只影响**下一轮**。
-- Mini 手势：**单击**开始/暂停 · **双击**切换模式（待开始）· **拖动**移动 · **右键**菜单。
-- 专注轮数与近 7 天记录：有实际投入即记一轮（含提前结束）；分钟只累计真实运行时间，不含暂停等待。
-- **中文 / English** 界面，在设置中切换（保存后两窗口同步生效）。
-- 等比例缩放：调整窗口大小，整体布局同步缩放，不重排、不裁切。
+目前为早期试用版，安装包未签名，Windows 包属于实验性交叉构建。首次打开前请看[安装指南](docs/INSTALL.md#中文安装说明)；Intel 与 Windows 的设备、系统和缩放兼容性仍需要更多真人测试。
 
-## 下载
+- 专注可设为 1–120 分钟，休息可设为 1–60 分钟。已经开始的一轮保留原时长，新设置用于下一轮。
+- Mini 单击开始或暂停，双击切换模式并待开始，拖动移动，右键打开菜单。单击会稍等片刻，以区别双击。
+- 近七天记录包含提前结束的专注轮次；只累计运行时间，不包含暂停等待。
+- 在设置中选择中文或 English，保存后两窗口同步；Windows 的部分系统菜单仍为中文。
+- 关闭主窗口只是隐藏。Mac 从 Dock 恢复、用 ⌘Q 退出；Windows 从托盘恢复、用托盘菜单退出或显示 Mini。
+- 完成后不会自动进入下一轮，目前没有声音或系统通知。
 
-见 [Releases](https://github.com/Sal-Cmbfmj/flowglass-app/releases)：mac-arm64（Apple Silicon）、mac-x64（Intel）、win-x64（实验性交叉构建）。
+### 试用前知道这些
 
-## 隐私
+0.2.1 改善了窗口大小、历史页间距和 Mini 可见性，也增加了 Windows Mini 的恢复入口。目前仍有语言草稿和设置弹窗等小问题，复现与临时处理方式见[已知问题](docs/KNOWN-ISSUES.md)。
 
-所有数据保存在本机 WebView 的 localStorage（设置、当前轮次、最近 5000 条记录）。**无账号、无云同步、无统计上报**，不上传任何内容。（样式表加载 Google Fonts，可能产生一次字体网络请求。）
+设置和记录保存在本机，无账号、无云同步，不上传计时记录。Google Fonts 字体加载可能联网，Windows 安装时也可能下载 WebView2。运行中的计时不会因为睡眠或退出而自动暂停；退出后没有独立后台提醒。记录最多保留 5,000 条，目前没有导出功能。
 
-## 安装说明
-
-- **macOS（未签名）**：首次打开如提示「无法验证开发者」，确认下载来源后到「系统设置 → 隐私与安全性 → 仍要打开」；请勿整体关闭系统安全设置。
-- **Windows**：SmartScreen 提示「未知发布者」时选「更多信息 → 仍要运行」；依赖 WebView2（缺失时安装器引导下载）。主窗口关闭为**隐藏**，从托盘图标恢复（左键或菜单）；彻底退出用托盘菜单。
-- 详细说明：[docs/INSTALL.md](docs/INSTALL.md)。
-
-## 开发者快速开始
-
-Node.js 22 + pnpm 10 + Rust stable 及对应平台 [Tauri 依赖](https://v2.tauri.app/start/prerequisites/)。
-
-```bash
-pnpm install --frozen-lockfile
-pnpm dev                 # Web 预览 8443；挂件 /widget.html
-pnpm tauri dev           # 桌面开发 5173
-pnpm test                # 隔离计时/菜单回归
-pnpm check               # TypeScript 检查
-pnpm tauri build         # 构建当前平台安装包
-```
-
-平台指南：[macOS Intel 构建](docs/BUILD-macos-intel.md) · [Windows 构建](docs/BUILD-windows.md)
-
-## 目录结构
-
-| 路径 | 用途 |
-| --- | --- |
-| `src/App.tsx` | 主窗口：计时、设置、历史 |
-| `src/widget.tsx` | Mini 渲染、手势与菜单 |
-| `src/timerStore.ts` | 共享计时真值、冻结时长、事件日志 |
-| `src/i18n.ts` | 中英文字典与语言持久化 |
-| `src/index.css` | 视觉与布局 |
-| `src-tauri/` | Rust 壳：窗口、托盘（Windows）、平台行为 |
-| `scripts/` | 隔离回归检查 |
-
-## 已知限制
-
-- 未签名/未公证；无通知与提示音；无开机启动；无导出。
-- 倒计时基于墙钟推导，修改系统时间会影响显示。
-- 双窗口同一瞬间并发写入不做事务保障（常规串行操作已去重）。
-- Windows NSIS 安装器目前为 macOS 交叉构建（实验性），建议按文档在 Windows 原生构建。
-
-## 需求与验收
-
-当前移植规则为 FG-MVP 系列（中文）：入口见 `docs/requirements/`，完成提示修复记录见 [docs/COMPLETION-0.1.1.md](docs/COMPLETION-0.1.1.md)。Intel/Windows 开发请补测 FG-057 至 059。
-
-## 许可
-
-MIT，见 [LICENSE](LICENSE)。图标为 AI 辅助生成；界面起始于 Figma Make 导出并继续开发。
+遇到问题可以[提交反馈](https://github.com/Sal-Cmbfmj/flowglass-app/issues/new/choose)，附版本、系统、芯片、显示缩放和复现步骤即可，请勿上传私人记录。开发相关内容见[开发指南](docs/DEVELOPMENT.md)，各版本变化见[更新记录](CHANGELOG.md)。

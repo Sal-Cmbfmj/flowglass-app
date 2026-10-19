@@ -1,30 +1,67 @@
-# 安装与使用
+# Install and use Flowglass
 
-当前预览版本：0.1.1（macOS arm64 / macOS x64）。更新前先用 ⌘Q 退出旧版本，再替换；若之前直接从解压目录打开，请改从「应用程序」打开新版。
+Current test release: **0.2.1**. Download from [GitHub Releases](https://github.com/Sal-Cmbfmj/flowglass-app/releases/tag/v0.2.1). For the app, choose a ZIP, DMG or EXE under **Assets**; the automatically generated “Source code” archives are for developers.
 
-## macOS（Apple Silicon 与 Intel）
+All packages are unsigned. Compatibility testing is ongoing; see the [known issues](KNOWN-ISSUES.md). Intel and Windows packages being available does not mean every system or display setup has been verified.
 
-「关于本机」显示 Apple（M 系列）或 Intel 芯片的 Mac 均适用；两份包功能相同，选择与芯片匹配的包。最低 macOS 版本尚未完成多机器验证。
+## macOS
 
-1. 向作者获取试用 ZIP，解压得到 Flowglass.app。
-2. 更新时先用 ⌘Q 退出旧版，再把 .app 拖到「应用程序」，选择替换。
-3. 从「应用程序」打开。此预览包未完成 Developer ID 签名和公证，可能出现开发者验证提示。
-4. 确认下载来源后，可按 [Apple 官方说明](https://support.apple.com/en-gb/102445) 到「系统设置 → 隐私与安全性 → 仍要打开」。损坏或恶意软件提示不要一概绕过，应向作者反馈完整提示。
+1. Open **About This Mac**. If it shows an Apple M-series chip, choose `mac-arm64`. If it shows Intel, choose `mac-x64`.
+2. Quit an existing Flowglass instance with **⌘Q** before updating.
+3. Unzip the ZIP and move `Flowglass.app` into Applications. For the Intel DMG, open it and copy the app into Applications.
+4. Open Flowglass from Applications. If macOS cannot verify the developer, confirm you downloaded the expected package, then follow [Apple's guidance](https://support.apple.com/en-gb/102445) in **System Settings → Privacy & Security → Open Anyway**. Do not turn off system-wide security protections or treat a malware warning as an ordinary unsigned-app prompt.
 
-主窗口关闭为隐藏；点 Dock 图标可恢复。真正退出请用 ⌘Q。Mini：单击开始/暂停；双击切换模式且待开始；拖动移动；右键菜单；点击菜单外或 Esc 关闭菜单。
+Closing the main window hides it. Click the Dock icon to reopen it; **⌘Q** quits both windows. Minimum supported macOS versions have not been established through a complete device test matrix.
 
-## Windows（x64）
+## Windows x64
 
-Windows 安装包为 NSIS 安装器（`Flowglass_<版本>_x64-setup.exe`），按用户安装、无需管理员权限；安装器界面为简体中文。
+The 0.2.1 EXE is an experimental macOS cross-build. Native Windows builds are the preferred development path; this package is available for feedback from testers.
 
-1. 双击安装器。SmartScreen 可能提示「未知发布者」（包未签名），选择「更多信息 → 仍要运行」；不要为此关闭系统安全设置。
-2. 依赖 WebView2 Runtime：Windows 11 一般已自带；缺失时安装器会联网下载安装。完全离线机器请先手动安装 [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。
-3. 从开始菜单（或桌面快捷方式）启动 Flowglass。
-4. 主窗口点 ✕ 为隐藏：在系统托盘（任务栏右下角）找到 Flowglass 图标，**左键单击或右键菜单「显示主面板」**恢复。
-5. 彻底退出：托盘右键菜单「**退出 Flowglass**」（会同时关闭主面板与 Mini）。
-6. 程序正在运行时再次双击图标：不会出现第二组窗口，会直接恢复主面板。
-7. 卸载：「设置 → 应用 → Flowglass」。本机计时记录不会被卸载器删除。
+1. Download `Flowglass_0.2.1_win-x64_20261019.exe` and run it. If SmartScreen shows “unknown publisher,” confirm the package source before choosing **More info → Run anyway**, if that option is available. Do not disable security protections to install it.
+2. The installer is configured for per-user installation and offers application shortcuts. It requires **WebView2 Runtime**; if missing, the installer is configured to download it. Offline machines need the runtime installed separately from [Microsoft](https://developer.microsoft.com/microsoft-edge/webview2/).
+3. Start Flowglass from the installed shortcut. Closing the main window hides it. Left-click the tray icon, or choose **显示主面板** (“Show main window”), to reopen it.
+4. Use **显示 Mini** to show the floating hourglass and **退出 Flowglass** to quit. These tray labels are currently Chinese even when the app interface is English.
 
-设置只影响下一轮；重置或切换创建新轮次。专注轮数包含有实际投入的提前结束；累计时长只算实际投入，不算暂停等待。提醒目前只有视觉，无通知或提示音。
+If Mini is missing, clipped or behaves differently after changing monitors, include your Windows version, display resolution and scaling percentage in a report. The diagnostic file is `%TEMP%\flowglass-widget.log`; review its contents before sharing it. A complete Windows 10/11 compatibility and display-scaling matrix is not yet available.
 
-记录保存在本机，没有云同步；退出后无独立后台提醒服务。CSS 加载 Google Fonts，可能产生字体网络请求。请勿在 Issue 上传私人记录或完整系统日志。
+## Everyday use
+
+- Mini: click to start/pause/resume, double-click to switch mode ready to start, drag to move, right-click for its menu. A single click is intentionally delayed to distinguish it from a double-click.
+- Settings: use the on-screen settings button. **⌘,** on Mac or **Ctrl+,** on Windows also toggles Settings, but 0.2.1 has a [language-draft bug](KNOWN-ISSUES.md) on that path.
+- Choose 中文 or English and save. Cancel, Escape and clicking outside are intended to discard drafts; after canceling a language change, reopen with the on-screen button and check the selection before saving.
+- Already-started sessions retain their original length. A reset or mode switch creates a new round using saved durations.
+- Focus history includes interrupted rounds with time spent. Pauses do not add time. The app does not automatically begin the next round or play a sound.
+
+## Updates and local records
+
+Keep the same application identity when updating. On Mac, quit before replacing the app; on Windows, quit before running the newer installer. The app is designed to use the same local data location, but this beta has not completed a comprehensive upgrade/uninstall data-retention test matrix. Do not treat uninstalling as a backup or data-migration method.
+
+Records are local to this computer; there is no cloud sync or export. Sleep or quitting does not pause a running timer. After quitting, there is no separate service to notify you when it ends.
+
+---
+
+## 中文安装说明
+
+下载 [0.2.1 试用包](https://github.com/Sal-Cmbfmj/flowglass-app/releases/tag/v0.2.1)，展开 **Assets** 选择安装文件即可，不需要下载 Source code。
+
+### Mac
+
+在「关于本机」查看芯片：M 系列选 `mac-arm64.zip`，Intel 选 `mac-x64.zip` 或 `.dmg`。更新前用 **⌘Q** 退出旧版。ZIP 解压后将 `Flowglass.app` 放进「应用程序」；DMG 打开后将应用复制进去，再从「应用程序」打开。
+
+包未签名/公证，首次打开若提示无法验证开发者，确认下载来源后按 [Apple 官方说明](https://support.apple.com/en-gb/102445)到「系统设置 → 隐私与安全性 → 仍要打开」。不要关闭全局安全设置，也不要把恶意软件警告一概当作普通未签名提示处理。
+
+关闭主窗口只是隐藏，点击 Dock 图标恢复；彻底退出用 **⌘Q**。
+
+### Windows
+
+选择 `Flowglass_0.2.1_win-x64_20261019.exe`。这是供反馈的实验性交叉构建包，尚未覆盖所有 Windows 设备与缩放组合。若 SmartScreen 提示未知发布者，确认来源后，在系统允许的情况下选择「更多信息 → 仍要运行」。
+
+安装器配置为按用户安装；依赖 WebView2，缺失时会尝试联网下载，离线机器需先从 [Microsoft](https://developer.microsoft.com/microsoft-edge/webview2/)安装运行时。
+
+从安装后的快捷方式启动。关闭主窗口只是隐藏，左击托盘图标或选「显示主面板」恢复；「显示 Mini」用于显示挂件，「退出 Flowglass」彻底退出。若遇到 Mini 不可见或裁切，请反馈系统、分辨率、缩放比例；诊断文件为 `%TEMP%\flowglass-widget.log`，分享前先检查内容。
+
+### 使用与更新
+
+Mini 单击开始/暂停、双击切换并待开始、拖动移动、右键菜单。语言在设置中选择，保存生效。0.2.1 存在快捷键重开设置后复用已取消语言草稿的问题，建议用界面上的设置按钮打开并核对选择；完整说明见[已知问题](KNOWN-ISSUES.md)。设置面板可在遮罩内滚动。
+
+更新前先退出应用。应用设计上沿用相同本地数据位置，但升级与卸载的数据保留尚未完成全面验证，请勿把卸载当作备份或迁移。记录保存在本机，没有同步或导出。睡眠或退出不会自动暂停计时，退出后也没有独立后台提醒。
