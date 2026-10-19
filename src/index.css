@@ -458,6 +458,7 @@ button:focus-visible {
 .widget-hint {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 14px;
   margin-top: 14px;
 }
@@ -477,6 +478,7 @@ button:focus-visible {
 
 .widget-hint .hint-group {
   display: flex;
+  flex: none;
   flex-direction: column;
   align-items: center;
   gap: 4px;
@@ -498,6 +500,7 @@ button:focus-visible {
   font-style: normal;
   font-weight: 500;
   letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .widget-hint .hint-group small {
@@ -746,6 +749,48 @@ footer strong {
   color: #b2a89f;
   font-size: 8px;
   letter-spacing: 0.05em;
+}
+
+/* 语言分段选择：沿用 stepper 的结构与暖色设计令牌 */
+.lang-seg {
+  display: flex;
+  align-items: center;
+  margin-top: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(100, 81, 66, 0.14);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.lang-seg button {
+  flex: 1;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #8d8177;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.lang-seg button + button {
+  border-left: 1px solid rgba(100, 81, 66, 0.1);
+}
+
+.lang-seg button:hover {
+  background: rgba(255, 112, 72, 0.09);
+  color: #ef6942;
+}
+
+.lang-seg button.active {
+  background: rgba(255, 112, 72, 0.12);
+  color: #ef6942;
+}
+
+.settings-field label i.lang-dot {
+  background: linear-gradient(135deg, #ff7048, #59b9a5);
 }
 
 .settings-sheet .sheet-footer {
@@ -1214,8 +1259,8 @@ html:has(#widget-root) {
 /* 主界面固定设计画布；按可用窗口等比例绘制，宽高比不同只增加留白。 */
 body:has(.scaled-stage) { padding: 0; overflow: hidden; }
 .scaled-stage { position: relative; }
-.design-stage { width: 780px; height: 540px; display: grid; place-items: center; transform-origin: top left; }
-.design-stage .app-shell { width: 720px; height: 460px; min-height: 460px; }
+.design-stage { width: 860px; height: 540px; display: grid; place-items: center; transform-origin: top left; }
+.design-stage .app-shell { width: 800px; height: 460px; min-height: 460px; }
 
 /* 历史图表与底栏共用横向安全边界；日期轴距底栏衬线至少 32px。 */
 footer.history-footer { width: calc(100% - 76px); }
