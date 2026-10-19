@@ -1,6 +1,6 @@
 [package]
 name = "flowglass"
-version = "0.2.0"
+version = "0.2.1"
 description = "Flowglass 沙漏番茄钟"
 edition = "2021"
 
