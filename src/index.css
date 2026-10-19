@@ -6,6 +6,9 @@
   color: #40372f;
   background: #ded9d1;
   font-synthesis: none;
+  /* 2026-10-19 试用反馈：Mini 静置透明度太低（Windows 上几乎注意不到）。
+     UI-04 原值 0.58 → 0.72；回滚只需改回这一处。 */
+  --widget-quiet-opacity: 0.72;
 }
 
 * {
@@ -470,13 +473,18 @@ button:focus-visible {
   letter-spacing: 0.1em;
 }
 
+/* 标题与面板其他行左对齐；四组手势在剩余空间内居中 */
 .widget-hint .hint-groups {
   display: flex;
+  flex: 1;
   align-items: center;
+  justify-content: center;
+  min-width: 0;
 }
 
 .widget-hint .hint-group {
   display: flex;
+  flex: none;
   flex-direction: column;
   align-items: center;
   gap: 4px;
@@ -498,6 +506,7 @@ button:focus-visible {
   font-style: normal;
   font-weight: 500;
   letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .widget-hint .hint-group small {
@@ -748,6 +757,48 @@ footer strong {
   letter-spacing: 0.05em;
 }
 
+/* 语言分段选择：沿用 stepper 的结构与暖色设计令牌 */
+.lang-seg {
+  display: flex;
+  align-items: center;
+  margin-top: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(100, 81, 66, 0.14);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.lang-seg button {
+  flex: 1;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #8d8177;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.lang-seg button + button {
+  border-left: 1px solid rgba(100, 81, 66, 0.1);
+}
+
+.lang-seg button:hover {
+  background: rgba(255, 112, 72, 0.09);
+  color: #ef6942;
+}
+
+.lang-seg button.active {
+  background: rgba(255, 112, 72, 0.12);
+  color: #ef6942;
+}
+
+.settings-field label i.lang-dot {
+  background: linear-gradient(135deg, #ff7048, #59b9a5);
+}
+
 .settings-sheet .sheet-footer {
   display: flex;
   align-items: center;
@@ -800,7 +851,7 @@ footer strong {
   left: 38px;
   display: grid;
   grid-template-rows: 56px 70px minmax(0, 1fr);
-  gap: 12px;
+  gap: 18px; /* 2026-10-19 试用反馈：原 12px 标题/统计/图表过挤，UI-02 间距调整 */
   min-height: 0;
   animation: page-in 320ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
 }
@@ -1058,7 +1109,7 @@ body:has(#widget-root) {
   box-shadow:
     0 10px 24px rgba(58, 46, 36, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
-  opacity: 0.58;
+  opacity: var(--widget-quiet-opacity, 0.58);
   transform: scale(0.98);
   transition: opacity 320ms ease, transform 320ms cubic-bezier(0.2, 0.75, 0.3, 1);
   cursor: pointer;
@@ -1214,8 +1265,8 @@ html:has(#widget-root) {
 /* 主界面固定设计画布；按可用窗口等比例绘制，宽高比不同只增加留白。 */
 body:has(.scaled-stage) { padding: 0; overflow: hidden; }
 .scaled-stage { position: relative; }
-.design-stage { width: 780px; height: 540px; display: grid; place-items: center; transform-origin: top left; }
-.design-stage .app-shell { width: 720px; height: 460px; min-height: 460px; }
+.design-stage { width: 860px; height: 540px; display: grid; place-items: center; transform-origin: top left; }
+.design-stage .app-shell { width: 800px; height: 460px; min-height: 460px; }
 
 /* 历史图表与底栏共用横向安全边界；日期轴距底栏衬线至少 32px。 */
 footer.history-footer { width: calc(100% - 76px); }

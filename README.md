@@ -1,68 +1,151 @@
+# Flowglass · Hourglass Pomodoro Timer
+
+A quiet desktop companion for focused work: a main panel to watch the time, and a tiny always-on-top hourglass that stays on your desktop. Warm visuals, falling-sand animation, and a lightweight focus/break rhythm.
+
+*English first · 中文说明见文末*
+
+> Early beta. Packages are **unsigned** — see [Install notes](#install-notes) for Gatekeeper / SmartScreen guidance. Windows builds are cross-compiled and experimental.
+
+## Features
+
+- Main panel + always-on-top Mini widget sharing **one timer** (absolute-timestamp single source of truth — both windows always agree).
+- Focus / break modes; duration settings only affect the **next** round.
+- Mini gestures: **click** start/pause · **double-click** switch mode (idle) · **drag** to move · **right-click** for menu.
+- Focus rounds & 7-day history — rounds count when time was actually invested, interruptions included; minutes count only real running time, never paused waiting.
+- **English / 简体中文** interface, switchable in Settings (applies to both windows on save).
+- Proportional UI: resize the window and the whole layout scales together, no reflow or cropping.
+
+## Downloads
+
+From [Releases](https://github.com/Sal-Cmbfmj/flowglass-app/releases):
+
+| Package | Platform |
+| --- | --- |
+| `Flowglass_<v>_mac-arm64.zip` | macOS · Apple Silicon |
+| `Flowglass_<v>_mac-x64.zip` / `.dmg` | macOS · Intel |
+| `Flowglass_<v>_win-x64.exe` | Windows 10/11 x64 (experimental cross-build — see release notes) |
+
+## Privacy
+
+Flowglass keeps everything on your machine. Timer state, settings and the last 5000 session records live in the WebView's local storage — there are **no accounts, no cloud sync, no analytics and no telemetry**. Nothing is uploaded. (One network note: the stylesheet loads Google Fonts, so a font request may go out.)
+
+## Install notes
+
+- **macOS (unsigned)**: first launch may warn "cannot verify developer". Confirm the download source, then System Settings → Privacy & Security → **Open Anyway**. Do not disable security settings wholesale.
+- **Windows**: SmartScreen may flag "unknown publisher" → More info → Run anyway. Requires WebView2 Runtime (the installer guides the download if missing). Closing the main window **hides** it — restore from the tray icon (left-click or menu); quit from the tray menu.
+- Details: [docs/INSTALL.md](docs/INSTALL.md).
+
+## Developer quickstart
+
+Node.js 22, pnpm 10, Rust stable, plus the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your platform.
+
+```bash
+pnpm install --frozen-lockfile
+pnpm dev                 # web preview on 8443; widget at /widget.html
+pnpm tauri dev           # desktop dev (5173)
+pnpm test                # isolated timer/menu regression
+pnpm check               # TypeScript
+pnpm tauri build         # native package for the host platform
+```
+
+Platform guides: [macOS Intel build](docs/BUILD-macos-intel.md) · [Windows build](docs/BUILD-windows.md)
+
+## Structure
+
+| Path | Purpose |
+| --- | --- |
+| `src/App.tsx` | main window: timer, settings, history |
+| `src/widget.tsx` | Mini rendering, gestures and menu |
+| `src/timerStore.ts` | shared timer truth, frozen per-round duration, event log |
+| `src/i18n.ts` | zh/en strings and language persistence |
+| `src/index.css` | visual design and layout |
+| `src-tauri/` | Rust shell: windows, tray (Windows), platform behaviors |
+| `scripts/` | isolated regression checks |
+
+## Known limitations
+
+- Unsigned & un-notarized; no notifications or sounds; no auto-start; no export.
+- Countdown derives from the wall clock; changing the system clock affects it.
+- No transaction guarantees for two windows writing at the exact same instant (normal serial operations are deduplicated).
+- The Windows NSIS installer is currently cross-compiled from macOS (experimental). Native Windows builds are preferred and documented.
+
+## Requirements & acceptance
+
+Porting/acceptance rules follow the FG-MVP requirement pack (Chinese): entry doc in `docs/requirements/`, completion-rendering record in [docs/COMPLETION-0.1.1.md](docs/COMPLETION-0.1.1.md). Intel/Windows ports should re-test FG-057~059.
+
+## License
+
+MIT — see [LICENSE](LICENSE). Icon is AI-assisted; the UI started from a Figma Make export and evolved.
+
+---
+
 # Flowglass · 沙漏番茄钟
 
-一个安静陪伴专注的桌面小工具：主面板看时间，Mini 沙漏留在桌面。暖色界面、流沙动画，以及专注/休息的轻量切换。
+一个安静陪伴专注的桌面小工具：主面板看时间，Mini 沙漏留在桌面。暖色界面、流沙动画，以及专注/休息的轻量节奏。
 
-**当前为早期试用版，已提供的测试包仅适用于 Apple Silicon Mac。** Intel Mac 与 Windows 尚未完成构建和实机验证，不代表框架只支持 Apple Silicon。预览包未完成 Developer ID 签名或公证。
+> 早期试用版。所有安装包**均未签名**，首次打开的引导见下方安装说明；Windows 包为交叉构建实验版。
 
-当前源码版本 **0.1.1**：修复 Mini 在最后一秒切换“完成”时的文字残影风险。
+## 功能
 
-## 能做什么
+- 主面板 + 置顶 Mini 挂件共享**同一份计时真值**（绝对时间戳推导，两窗口永远一致）。
+- 专注 / 休息模式；设置只影响**下一轮**。
+- Mini 手势：**单击**开始/暂停 · **双击**切换模式（待开始）· **拖动**移动 · **右键**菜单。
+- 专注轮数与近 7 天记录：有实际投入即记一轮（含提前结束）；分钟只累计真实运行时间，不含暂停等待。
+- **中文 / English** 界面，在设置中切换（保存后两窗口同步生效）。
+- 等比例缩放：调整窗口大小，整体布局同步缩放，不重排、不裁切。
 
-- 主面板 + 置顶 Mini 浮窗，共享倒计时状态。
-- 自定义专注/休息时长；设置只影响下一轮。
-- Mini 单击开始/暂停，双击切换且待开始，拖动移动，右键查看更多操作。
-- 专注轮数与近 7 天记录：提前结束也记一轮，时长只累计实际投入。
-- 主面板等比例放大；关闭主窗口为隐藏，点击 Dock 图标恢复。
+## 下载
 
-## 普通用户
+见 [Releases](https://github.com/Sal-Cmbfmj/flowglass-app/releases)：mac-arm64（Apple Silicon）、mac-x64（Intel）、win-x64（实验性交叉构建）。
 
-当前小范围试用，安装包由作者按需提供；本仓库暂未发布正式 Release 或网盘地址。获取包后按 [安装说明](docs/INSTALL.md) 操作，无需安装 Git 或编译代码。如果喜欢，可以给项目一个 Star；这是自愿支持。
+## 隐私
+
+所有数据保存在本机 WebView 的 localStorage（设置、当前轮次、最近 5000 条记录）。**无账号、无云同步、无统计上报**，不上传任何内容。（样式表加载 Google Fonts，可能产生一次字体网络请求。）
+
+## 安装说明
+
+- **macOS（未签名）**：首次打开如提示「无法验证开发者」，确认下载来源后到「系统设置 → 隐私与安全性 → 仍要打开」；请勿整体关闭系统安全设置。
+- **Windows**：SmartScreen 提示「未知发布者」时选「更多信息 → 仍要运行」；依赖 WebView2（缺失时安装器引导下载）。主窗口关闭为**隐藏**，从托盘图标恢复（左键或菜单）；彻底退出用托盘菜单。
+- 详细说明：[docs/INSTALL.md](docs/INSTALL.md)。
 
 ## 开发者快速开始
 
-需要 Node.js 22、pnpm 10、Rust stable，以及对应平台的 [Tauri 开发依赖](https://v2.tauri.app/start/prerequisites/)。
+Node.js 22 + pnpm 10 + Rust stable 及对应平台 [Tauri 依赖](https://v2.tauri.app/start/prerequisites/)。
 
 ```bash
-git clone https://github.com/Sal-Cmbfmj/flowglass-app.git
-cd flowglass-app
 pnpm install --frozen-lockfile
-pnpm dev                 # Web 预览，默认 8443；挂件为 /widget.html
-pnpm tauri dev           # 桌面开发，自动使用 5173
-pnpm build               # 前端构建
+pnpm dev                 # Web 预览 8443；挂件 /widget.html
+pnpm tauri dev           # 桌面开发 5173
+pnpm test                # 隔离计时/菜单回归
 pnpm check               # TypeScript 检查
-pnpm test                # 隔离计时和菜单事件回归
-pnpm tauri build --bundles app  # macOS 应用包
+pnpm tauri build         # 构建当前平台安装包
 ```
 
-Web 预览没有原生拖动/Dock 行为，Web 与桌面存储互相独立。macOS App/DMG 配置目前是默认目标；Windows 移植需调整安装目标和窗口恢复入口。
+平台指南：[macOS Intel 构建](docs/BUILD-macos-intel.md) · [Windows 构建](docs/BUILD-windows.md)
 
-## 结构
+## 目录结构
 
-| 文件 | 用途 |
+| 路径 | 用途 |
 | --- | --- |
-| `src/App.tsx` | 主窗口、设置和历史 |
-| `src/widget.tsx` | Mini 渲染、鼠标手势与菜单 |
-| `src/timerStore.ts` | 共享绝对时间戳、本轮冻结时长与事件记录 |
-| `src/index.css` | 视觉和布局 |
-| `src-tauri/` | Rust 桌面壳、窗口配置和图标 |
+| `src/App.tsx` | 主窗口：计时、设置、历史 |
+| `src/widget.tsx` | Mini 渲染、手势与菜单 |
+| `src/timerStore.ts` | 共享计时真值、冻结时长、事件日志 |
+| `src/i18n.ts` | 中英文字典与语言持久化 |
+| `src/index.css` | 视觉与布局 |
+| `src-tauri/` | Rust 壳：窗口、托盘（Windows）、平台行为 |
 | `scripts/` | 隔离回归检查 |
 
-## 数据与边界
+## 已知限制
 
-数据保存在本机 localStorage：`flowglass-settings` 设置，`flowglass-live` 当前轮次，`flowglass-log` 最多 5000 条结束事件；旧 `flowglass-history` 按天计数由主窗口迁移。`completed` 区分自然完成与提前结束，专注轮数包含两者，只计有实际投入的轮次。
-
-- 无账号、云同步或导出；不上传计时记录。Google Fonts 的字体加载可能访问网络。
-- 完成只有视觉反馈，暂无系统通知或提示音；退出后无独立后台服务。
-- 极限双窗口同时修改状态的事务保障本 MVP 暂不处理。
-- 最低 macOS 版本、Intel 和 Windows 均未完成完整兼容性验收。
-- 当前启用 macOS 透明窗口相关私有 API 配置；上 Mac App Store 前须另做 API/沙盒/签名合规改造与审核，购买开发者账号不等于可直接上架。
-
-## 贡献与许可
-
-欢迎提交带版本、系统、操作步骤的 Issue；请勿上传私人信息。参见 [贡献说明](docs/CONTRIBUTING.md)。
-
-MIT，见 [LICENSE](LICENSE)。依赖仍遵循各自许可证。图标为 AI 辅助生成，界面起始于 Figma Make 导出并继续开发。
+- 未签名/未公证；无通知与提示音；无开机启动；无导出。
+- 倒计时基于墙钟推导，修改系统时间会影响显示。
+- 双窗口同一瞬间并发写入不做事务保障（常规串行操作已去重）。
+- Windows NSIS 安装器目前为 macOS 交叉构建（实验性），建议按文档在 Windows 原生构建。
 
 ## 需求与验收
 
-当前移植规则为FG-MVP-1.1：[需求入口](docs/requirements/00-开发与验收入口.md)，[完成提示修复记录](docs/COMPLETION-0.1.1.md)。Intel/Windows开发请补测FG-057至059。
+当前移植规则为 FG-MVP 系列（中文）：入口见 `docs/requirements/`，完成提示修复记录见 [docs/COMPLETION-0.1.1.md](docs/COMPLETION-0.1.1.md)。Intel/Windows 开发请补测 FG-057 至 059。
+
+## 许可
+
+MIT，见 [LICENSE](LICENSE)。图标为 AI 辅助生成；界面起始于 Figma Make 导出并继续开发。
