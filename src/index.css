@@ -646,7 +646,8 @@ footer strong {
 .settings-sheet {
   width: min(348px, 100%);
   margin: auto;
-  padding: 22px 26px 20px;
+  /* FG021-02：新增语言行后弹窗超高被遮罩裁切，整体收紧垂直预算 */
+  padding: 16px 24px 14px;
   flex: none;
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 18px;
@@ -681,7 +682,7 @@ footer strong {
 }
 
 .settings-field {
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
 .settings-field label {
@@ -712,7 +713,7 @@ footer strong {
 
 .stepper button {
   width: 44px;
-  height: 36px;
+  height: 32px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -730,7 +731,7 @@ footer strong {
 
 .stepper input {
   flex: 1;
-  height: 36px;
+  height: 32px;
   padding: 0;
   border: 0;
   border-left: 1px solid rgba(100, 81, 66, 0.1);
@@ -751,7 +752,7 @@ footer strong {
 
 .settings-field small {
   display: block;
-  margin-top: 5px;
+  margin-top: 4px;
   color: #b2a89f;
   font-size: 8px;
   letter-spacing: 0.05em;
@@ -770,7 +771,7 @@ footer strong {
 
 .lang-seg button {
   flex: 1;
-  height: 36px;
+  height: 32px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -804,8 +805,8 @@ footer strong {
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 20px;
-  padding-top: 16px;
+  margin-top: 14px;
+  padding-top: 10px;
   border-top: 1px solid rgba(100, 81, 66, 0.1);
 }
 

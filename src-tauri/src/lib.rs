@@ -13,10 +13,24 @@ fn double_click_interval_ms() -> u64 {
     { 500 }
 }
 
+// Mini 右键菜单「打开主页面」：恢复并聚焦主面板（隐藏/最小化后也能找回）。
+#[tauri::command]
+fn show_main_panel(app: tauri::AppHandle) {
+    use tauri::Manager;
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.unminimize();
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![double_click_interval_ms])
+        .invoke_handler(tauri::generate_handler![
+            double_click_interval_ms,
+            show_main_panel
+        ])
         .setup(|app| {
             #[cfg(target_os = "macos")]
             {

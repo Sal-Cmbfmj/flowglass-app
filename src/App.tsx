@@ -16,7 +16,7 @@ import {
   windowId,
   type TimerMode,
 } from "./timerStore";
-import { readLang, strings, subscribeLang, weekdayShort, writeLang, type Lang } from "./i18n";
+import { isMacPlatform, readLang, strings, subscribeLang, weekdayShort, writeLang, type Lang } from "./i18n";
 
 const MODES = {
   focus: { color: "#ff7048" },
@@ -460,6 +460,12 @@ export default function App() {
 
   // 语言：主面板保存后，两窗口同步切换显示语言
   useEffect(() => subscribeLang(() => setLang(readLang())), []);
+  // 启动/切换时同步给原生壳层（Windows 托盘菜单语言；其余平台无此命令，静默）
+  useEffect(() => {
+    import("@tauri-apps/api/core")
+      .then(({ invoke }) => invoke("set_ui_language", { lang }))
+      .catch(() => {});
+  }, [lang]);
   useEffect(() => {
     document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
   }, [lang]);
@@ -503,16 +509,21 @@ export default function App() {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === ",") {
         event.preventDefault();
-        setSettingsOpen((open) => {
-          if (!open) setDraft(settings);
-          return !open;
-        });
+        // 与鼠标入口同一套初始化：两个草稿都重置，避免上一次被取消的
+        // 语言草稿经快捷键重开而回流（FG021-01）。
+        if (settingsOpen) {
+          setSettingsOpen(false);
+        } else {
+          setDraft(settings);
+          setDraftLang(lang);
+          setSettingsOpen(true);
+        }
       }
       if (event.key === "Escape") setSettingsOpen(false);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [settings]);
+  }, [settings, lang, settingsOpen]);
 
   const reset = () => {
     resetCurrent();
@@ -555,7 +566,7 @@ export default function App() {
           className={`settings-entry ${settingsOpen ? "active" : ""}`}
           onClick={() => (settingsOpen ? setSettingsOpen(false) : openSettings())}
           aria-label={s.openSettings}
-          title={s.settingsTitle}
+          title={s.settingsTitle(isMacPlatform())}
         >
           <svg viewBox="0 0 20 20" aria-hidden="true">
             <path d="M3 6h7M13.5 6H17M3 14h3.5M10 14h7" />
