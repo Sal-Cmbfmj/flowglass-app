@@ -523,15 +523,15 @@ export default function App() {
     .padStart(2, "0");
   const seconds = (secondsLeft % 60).toString().padStart(2, "0");
 
-  const [scale, setScale] = useState(() => Math.min(window.innerWidth / 780, window.innerHeight / 540));
+  const [scale, setScale] = useState(() => Math.min(window.innerWidth / 860, window.innerHeight / 540));
   useEffect(() => {
-    const resize = () => setScale(Math.min(window.innerWidth / 780, window.innerHeight / 540));
+    const resize = () => setScale(Math.min(window.innerWidth / 860, window.innerHeight / 540));
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
   }, []);
 
   return (
-    <div className="scaled-stage" style={{ width: 780 * scale, height: 540 * scale }}>
+    <div className="scaled-stage" style={{ width: 860 * scale, height: 540 * scale }}>
     <div className="design-stage" style={{ transform: `scale(${scale})` }}>
     <main
       className="app-shell"
