@@ -16,10 +16,11 @@ import {
   windowId,
   type TimerMode,
 } from "./timerStore";
+import { readLang, strings, subscribeLang, weekdayShort, writeLang, type Lang } from "./i18n";
 
 const MODES = {
-  focus: { label: "专注", color: "#ff7048" },
-  break: { label: "休息", color: "#59b9a5" },
+  focus: { color: "#ff7048" },
+  break: { color: "#59b9a5" },
 } as const;
 
 type Settings = { focus: number; break: number };
@@ -408,6 +409,9 @@ export default function App() {
   const [settings, setSettings] = useState<Settings>(readSettings);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [draft, setDraft] = useState<Settings>(settings);
+  const [draftLang, setDraftLang] = useState<Lang>(readLang);
+  const [lang, setLang] = useState<Lang>(readLang);
+  const s = strings(lang);
   const mode = live.mode;
   const running = live.running;
   const secondsLeft = live.finished ? 0 : Math.ceil(live.secondsLeft);
@@ -430,14 +434,14 @@ export default function App() {
         date.setDate(date.getDate() - (6 - index));
         return {
           key: dateKey(date),
-          day: date.toLocaleDateString("zh-CN", { weekday: "short" }).replace("周", ""),
+          day: weekdayShort(date, lang),
           date: `${date.getMonth() + 1}/${date.getDate()}`,
           count: completedOn(dateKey(date)),
           minutes: Math.round(focusSecondsOn(dateKey(date)) / 60),
           isToday: index === 6,
         };
       }),
-    [log],
+    [log, lang],
   );
   const weekSessions = recentDays.reduce((sum, day) => sum + day.count, 0);
   const weekMinutes = recentDays.reduce((sum, day) => sum + day.minutes, 0);
@@ -453,6 +457,12 @@ export default function App() {
       }),
     [],
   );
+
+  // 语言：主面板保存后，两窗口同步切换显示语言
+  useEffect(() => subscribeLang(() => setLang(readLang())), []);
+  useEffect(() => {
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+  }, [lang]);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -473,6 +483,7 @@ export default function App() {
 
   const openSettings = () => {
     setDraft(settings);
+    setDraftLang(lang);
     setSettingsOpen(true);
   };
 
@@ -484,6 +495,7 @@ export default function App() {
     setSettings(next);
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
     idleRemainingTo(next[mode] * 60000);
+    writeLang(draftLang);
     setSettingsOpen(false);
   };
 
@@ -537,13 +549,13 @@ export default function App() {
         </div>
         <div>
           <h1>Flowglass</h1>
-          <p>专注于此刻</p>
+          <p>{s.subtitle}</p>
         </div>
         <button
           className={`settings-entry ${settingsOpen ? "active" : ""}`}
           onClick={() => (settingsOpen ? setSettingsOpen(false) : openSettings())}
-          aria-label="打开设置"
-          title="设置 (⌘,)"
+          aria-label={s.openSettings}
+          title={s.settingsTitle}
         >
           <svg viewBox="0 0 20 20" aria-hidden="true">
             <path d="M3 6h7M13.5 6H17M3 14h3.5M10 14h7" />
@@ -557,41 +569,41 @@ export default function App() {
         <section className="history-page">
           <div className="history-heading">
             <div>
-              <span className="section-kicker">FOCUS ARCHIVE</span>
-              <h2>专注记录</h2>
-              <p>每一次沉淀，都让时间变得清晰。</p>
+              <span className="section-kicker">{s.focusArchive}</span>
+              <h2>{s.historyTitle}</h2>
+              <p>{s.historySubtitle}</p>
             </div>
             <button
               className="history-close"
               onClick={() => setHistoryOpen(false)}
-              aria-label="返回计时器"
+              aria-label={s.backToTimer}
             >
               <svg viewBox="0 0 20 20" aria-hidden="true">
                 <path d="m12.5 5-5 5 5 5" />
               </svg>
-              返回
+              {s.back}
             </button>
           </div>
 
           <div className="history-summary">
             <div>
-              <span>近 7 天专注</span>
-              <strong>{weekSessions}<small> 轮</small></strong>
+              <span>{s.weekFocus}</span>
+              <strong>{weekSessions}<small> {s.roundsUnit}</small></strong>
             </div>
             <div>
-              <span>累计时长</span>
-              <strong>{weekMinutes}<small> 分钟</small></strong>
+              <span>{s.totalMinutes}</span>
+              <strong>{weekMinutes}<small> {s.minutesUnit}</small></strong>
             </div>
             <div>
-              <span>活跃天数</span>
-              <strong>{activeDays}<small> / 7 天</small></strong>
+              <span>{s.activeDays}</span>
+              <strong>{activeDays}<small> {s.ofSevenDays}</small></strong>
             </div>
           </div>
 
           <div className="history-chart">
             <div className="chart-topline">
-              <span>每日专注轮数</span>
-              <span className="chart-legend"><i /> 含提前结束的轮次</span>
+              <span>{s.dailyRounds}</span>
+              <span className="chart-legend"><i /> {s.legendIncludesEarly}</span>
             </div>
             <div className="bars">
               {recentDays.map((day) => (
@@ -639,7 +651,7 @@ export default function App() {
           <div className="timer-panel">
             <div className="mode-status">
               <span style={{ backgroundColor: MODES[mode].color }} />
-              {MODES[mode].label}时间
+              {mode === "focus" ? `${s.focusLabel}${s.timeSuffix}` : `${s.breakLabel}${s.timeSuffix}`}
             </div>
             <div className="time" aria-live="polite">
               <span>{minutes}</span>
@@ -649,11 +661,11 @@ export default function App() {
             <p className="hint">
               {running
                 ? mode === "focus"
-                  ? "让思绪沉淀，保持你的节奏"
-                  : "放松一下，让精力慢慢恢复"
+                  ? s.runningFocusHint
+                  : s.runningBreakHint
                 : secondsLeft === 0
-                  ? "这一轮已经完成"
-                  : "准备好后，开始这一轮"}
+                  ? s.finishedHint
+                  : s.readyHint}
             </p>
 
             <div className="actions">
@@ -662,30 +674,30 @@ export default function App() {
                 onClick={() => chooseMode("focus")}
               >
                 <span className="action-icon"><PlayIcon paused={mode === "focus" && running} /></span>
-                <span><strong>{mode === "focus" && running ? "暂停专注" : "开始专注"}</strong><small>{settings.focus} 分钟</small></span>
+                <span><strong>{mode === "focus" && running ? s.pauseFocus : s.startFocus}</strong><small>{settings.focus} {s.minutesSmall}</small></span>
               </button>
               <button
                 className={`action break-action ${mode === "break" ? "active" : ""}`}
                 onClick={() => chooseMode("break")}
               >
                 <span className="action-icon"><PlayIcon paused={mode === "break" && running} /></span>
-                <span><strong>{mode === "break" && running ? "暂停休息" : "开始休息"}</strong><small>{settings.break} 分钟</small></span>
+                <span><strong>{mode === "break" && running ? s.pauseBreak : s.startBreak}</strong><small>{settings.break} {s.minutesSmall}</small></span>
               </button>
             </div>
 
-            <button className="reset-button" onClick={reset} aria-label="重置计时器">
+            <button className="reset-button" onClick={reset} aria-label={s.resetAria}>
               <svg viewBox="0 0 20 20" aria-hidden="true">
                 <path d="M15.7 7.1A6 6 0 1 0 16 12M15.7 3.8v3.6h-3.6" />
               </svg>
-              重置当前计时
+              {s.resetTimer}
             </button>
             <div className="widget-hint">
-              <span className="hint-title">桌面挂件</span>
+              <span className="hint-title">{s.widgetTitle}</span>
               <div className="hint-groups">
-                <div className="hint-group"><i>单击</i><small>开始 / 暂停</small></div>
-                <div className="hint-group"><i>双击</i><small>切换专注 / 休息</small></div>
-                <div className="hint-group"><i>拖动</i><small>移动位置</small></div>
-                <div className="hint-group"><i>右键</i><small>更多选项</small></div>
+                <div className="hint-group"><i>{s.hintClick}</i><small>{s.hintClickDesc}</small></div>
+                <div className="hint-group"><i>{s.hintDouble}</i><small>{s.hintDoubleDesc}</small></div>
+                <div className="hint-group"><i>{s.hintDrag}</i><small>{s.hintDragDesc}</small></div>
+                <div className="hint-group"><i>{s.hintMenu}</i><small>{s.hintMenuDesc}</small></div>
               </div>
             </div>
           </div>
@@ -693,13 +705,13 @@ export default function App() {
       )}
 
       <footer className={historyOpen ? "history-footer" : undefined}>
-        <span>专注轮数</span>
-        <div className="session-dots" aria-label={`今日已记录 ${sessions} 轮专注`}>
+        <span>{s.focusRounds}</span>
+        <div className="session-dots" aria-label={s.todayRoundsAria(sessions)}>
           {[0, 1, 2, 3].map((index) => (
             <i key={index} className={index < sessions ? "filled" : ""} />
           ))}
         </div>
-        <strong>{sessions} 轮</strong>
+        <strong>{s.roundsCount(sessions)}</strong>
         <button
           className={`history-entry ${historyOpen ? "active" : ""}`}
           onClick={() => setHistoryOpen((value) => !value)}
@@ -707,7 +719,7 @@ export default function App() {
           <svg viewBox="0 0 20 20" aria-hidden="true">
             <path d="M4 15V9m4 6V5m4 10v-3m4 3V7" />
           </svg>
-          {historyOpen ? "返回计时" : "历史"}
+          {historyOpen ? s.back : s.history}
         </button>
       </footer>
 
@@ -718,31 +730,31 @@ export default function App() {
             if (event.target === event.currentTarget) setSettingsOpen(false);
           }}
         >
-          <section className="settings-sheet" aria-label="设置">
+          <section className="settings-sheet" aria-label={s.settings}>
             <header>
               <div>
-                <span className="section-kicker">PREFERENCES</span>
-                <h2>设置</h2>
+                <span className="section-kicker">{s.preferences}</span>
+                <h2>{s.settings}</h2>
               </div>
               <button
                 className="history-close"
                 onClick={() => setSettingsOpen(false)}
-                aria-label="关闭设置"
+                aria-label={s.closeSettingsAria}
               >
                 <svg viewBox="0 0 20 20" aria-hidden="true">
                   <path d="m12.5 5-5 5 5 5" />
                 </svg>
-                关闭
+                {s.close}
               </button>
             </header>
 
             <div className="settings-field">
               <label>
                 <i style={{ background: MODES.focus.color }} />
-                专注时长
+                {s.focusLength}
               </label>
               <div className="stepper">
-                <button onClick={() => setDraft({ ...draft, focus: clampMinutes(draft.focus - 5, 1, 120) })} aria-label="减少专注时长">−5</button>
+                <button onClick={() => setDraft({ ...draft, focus: clampMinutes(draft.focus - 5, 1, 120) })} aria-label={s.decreaseFocus}>−5</button>
                 <input
                   type="number"
                   min={1}
@@ -750,18 +762,18 @@ export default function App() {
                   value={draft.focus}
                   onChange={(event) => setDraft({ ...draft, focus: +event.target.value })}
                 />
-                <button onClick={() => setDraft({ ...draft, focus: clampMinutes(draft.focus + 5, 1, 120) })} aria-label="增加专注时长">+5</button>
+                <button onClick={() => setDraft({ ...draft, focus: clampMinutes(draft.focus + 5, 1, 120) })} aria-label={s.increaseFocus}>+5</button>
               </div>
-              <small>1 – 120 分钟</small>
+              <small>{s.rangeFocus}</small>
             </div>
 
             <div className="settings-field">
               <label>
                 <i style={{ background: MODES.break.color }} />
-                休息时长
+                {s.breakLength}
               </label>
               <div className="stepper">
-                <button onClick={() => setDraft({ ...draft, break: clampMinutes(draft.break - 1, 1, 60) })} aria-label="减少休息时长">−1</button>
+                <button onClick={() => setDraft({ ...draft, break: clampMinutes(draft.break - 1, 1, 60) })} aria-label={s.decreaseBreak}>−1</button>
                 <input
                   type="number"
                   min={1}
@@ -769,14 +781,35 @@ export default function App() {
                   value={draft.break}
                   onChange={(event) => setDraft({ ...draft, break: +event.target.value })}
                 />
-                <button onClick={() => setDraft({ ...draft, break: clampMinutes(draft.break + 1, 1, 60) })} aria-label="增加休息时长">+1</button>
+                <button onClick={() => setDraft({ ...draft, break: clampMinutes(draft.break + 1, 1, 60) })} aria-label={s.increaseBreak}>+1</button>
               </div>
-              <small>1 – 60 分钟</small>
+              <small>{s.rangeBreak}</small>
+            </div>
+
+            <div className="settings-field">
+              <label>
+                <i className="lang-dot" />
+                {s.language}
+              </label>
+              <div className="lang-seg" role="radiogroup" aria-label={s.language}>
+                {(["zh", "en"] as Lang[]).map((code) => (
+                  <button
+                    key={code}
+                    role="radio"
+                    aria-checked={draftLang === code}
+                    className={draftLang === code ? "active" : ""}
+                    onClick={() => setDraftLang(code)}
+                  >
+                    {code === "zh" ? "中文" : "English"}
+                  </button>
+                ))}
+              </div>
+              <small>中文 / English</small>
             </div>
 
             <div className="sheet-footer">
-              <button className="ghost" onClick={() => setSettingsOpen(false)}>取消</button>
-              <button className="primary" onClick={saveSettings}>保存</button>
+              <button className="ghost" onClick={() => setSettingsOpen(false)}>{s.cancel}</button>
+              <button className="primary" onClick={saveSettings}>{s.save}</button>
             </div>
           </section>
         </div>
