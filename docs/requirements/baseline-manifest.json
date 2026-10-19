@@ -1,0 +1,38 @@
+{
+  "requirement_version": "FG-MVP-1.1",
+  "prepared_date": "2026-10-13",
+  "source_repo": "https://github.com/Sal-Cmbfmj/flowglass-app",
+  "source_commit": "eaf3a13016b59397e5a8a88c233b05b750de7c11",
+  "app_version": "0.1.1",
+  "build_label": "0.1.1",
+  "binary_arch": "arm64",
+  "source_hashes": {
+    "src/App.tsx": "6101c587e5b86e3c4684d66fccca5d162a008374a38b2c4234ad8e9d4d1745fb",
+    "src/index.css": "ea9603d9c8c70c51763a0c396cce5ed8997712ccfbf671c1cdf457e40d52ed01",
+    "src/timerStore.ts": "7c8e947e0ae6d56966aa522eb97edaf9afbdc65585f94f472f370d5e4a8356cd",
+    "src/widget.tsx": "fb6c1febbe177f8d4df303f3a14c6b51ad01949391efb325471d6f8438fe7d2a",
+    "src-tauri/src/lib.rs": "2793f48d236fe148972e5c03628b42ede200705a071def125659c769e9580343",
+    "src-tauri/tauri.conf.json": "51f40c55303e87a20ace86ddbc01b28271f0d1bb48a3c909eeb2e38b4dd28926"
+  },
+  "baseline_test_package_sha256": "87dafbb0a689fee5b0295d7ae189e5e1a0fcfce5cbeff85d2927c6bc6bafa997",
+  "current_baseline_evidence": {
+    "isolated_timer_checks": "12 PASS",
+    "isolated_widget_checks": "6 PASS",
+    "completion_browser_checks": "focus/break multiple phases, hover, reduced motion PASS Chromium",
+    "native_visual_regression": "PENDING user WKWebView confirmation",
+    "native_app_build": "PASS arm64 0.1.1"
+  },
+  "test_case_count": 59,
+  "source_archive": "baseline-source.zip",
+  "source_archive_sha256": "5f8525e90ac99736546cd19080e020e04155e4e51d407a54d9f4a128afd0d500",
+  "requirement_ids": 22,
+  "binary_build_commit_provenance": "Built in public source checkout; corresponding core file hashes verified; reproducible build not asserted",
+  "baseline_test_package": "Flowglass_0.1.1_arm64.zip",
+  "local_install_verification": {
+    "version": "0.1.1",
+    "canonical_running_process_verified": true,
+    "installed_binary_sha256": "f33c63881bc4dc71f6758c684688dc5cc8d5509b751979dfdeb2f1e50ddc4654",
+    "user_data_cleared": false,
+    "native_completion_visual_verified": false
+  }
+}

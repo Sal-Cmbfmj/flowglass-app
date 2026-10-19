@@ -4,7 +4,7 @@
   "version": "0.2.2",
   "identifier": "com.salcmbfmj.flowglass",
   "build": {
-    "beforeDevCommand": "PORT=5173 pnpm dev",
+    "beforeDevCommand": "pnpm dev --port 5173",
     "devUrl": "http://localhost:5173",
     "beforeBuildCommand": "pnpm build",
     "frontendDist": "../dist"
