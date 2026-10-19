@@ -1,52 +1,49 @@
-# macOS Intel (x86_64) 构建说明
+# Build for macOS Intel
 
-基线：`eaf3a13016b59397e5a8a88c233b05b750de7c11`（Apple Silicon 0.1.1）。
-本分支不修改任何应用代码：Intel 版与 M 基线共享同一份前端与 Rust 源码，
-仅以 `x86_64-apple-darwin` 目标重新编译。功能与视觉与 0.1.1 基线完全一致。
+The merged source includes the 0.2.1 interface and shared timer rules. Build it for `x86_64-apple-darwin` to produce an Intel app. The original port began at 0.1.1; that historical baseline is not the current UI version.
 
-## 前置条件
+## Prerequisites
 
-- Node.js 22 + pnpm 10+（`pnpm install --frozen-lockfile`）
-- Rust stable（本机默认工具链即可）
-- Xcode Command Line Tools
-- 已安装 x86_64 交叉目标：`rustup target add x86_64-apple-darwin`
+- Node.js 22.12+ (or a newer supported release) and pnpm 10+
+- Rust stable and Xcode Command Line Tools
+- The Intel target: `rustup target add x86_64-apple-darwin`
 
-Apple Silicon Mac 可直接交叉编译 x86_64 目标；在 Intel Mac 上原生构建命令相同。
-
-## 构建命令
+An Apple Silicon Mac can cross-build this target; an Intel Mac can build it natively.
 
 ```bash
 pnpm install --frozen-lockfile
+pnpm check
+pnpm test
 pnpm tauri build --target x86_64-apple-darwin
 ```
 
-产物位置：
+For version 0.2.1, expected outputs are:
 
-- `src-tauri/target/x86_64-apple-darwin/release/bundle/macos/Flowglass.app`
-- `src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/Flowglass_0.1.1_x64.dmg`
+```text
+src-tauri/target/x86_64-apple-darwin/release/bundle/macos/Flowglass.app
+src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/Flowglass_0.2.1_x64.dmg
+```
 
-## 架构验证
+## Verify the package
 
 ```bash
 file src-tauri/target/x86_64-apple-darwin/release/bundle/macos/Flowglass.app/Contents/MacOS/flowglass
-# 期望：Mach-O 64-bit executable x86_64
-
 lipo -info src-tauri/target/x86_64-apple-darwin/release/bundle/macos/Flowglass.app/Contents/MacOS/flowglass
-# 期望：Non-fat file with architecture x86_64
 ```
 
-Apple Silicon Mac 上的运行验证属于 Rosetta 转译补充证据，不能替代 Intel 实机验收。
+The executable must contain x86_64. Record the source commit, version, build command, toolchain, package SHA256 and signing/notarization status. Testing under Rosetta on Apple Silicon is useful supplementary evidence; it does not establish Intel hardware or minimum-OS compatibility.
 
-## Universal 包（可选）
+The current test packages are unsigned and not notarized. See [installation guidance](INSTALL.md) and [known issues](KNOWN-ISSUES.md).
 
-如需同时覆盖两种架构：
+## Optional: Universal build
 
 ```bash
 rustup target add aarch64-apple-darwin x86_64-apple-darwin
 pnpm tauri build --target universal-apple-darwin
 ```
 
-## 已知限制
+This is a build option, not an additional package claimed to be present in the current release. Verify both architectures and test on the corresponding devices before sharing it.
 
-- 未做 Developer ID 签名/公证；首次安装受 Gatekeeper 限制，安装限制如实记录在交付文档。
-- Intel 实机（最低系统版本、实机手势/性能）尚未验证，以实机证据为准。
+## 中文说明
+
+Intel 包来自同一套共享前端与计时逻辑，编译目标为 x86_64。架构输出、Rosetta 启动和 Intel 真机验证是不同层级的证据，应分别记录。当前界面版本为 0.2.1；最低系统版本和完整设备兼容性仍以实际测试为准。

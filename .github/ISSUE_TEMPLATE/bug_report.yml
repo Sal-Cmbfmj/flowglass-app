@@ -1,0 +1,33 @@
+name: Bug report / 问题反馈
+description: Tell us what happened and how to reproduce it / 描述问题与复现步骤
+title: ""
+body:
+  - type: markdown
+    attributes:
+      value: "Please check [known issues](https://github.com/Sal-Cmbfmj/flowglass-app/blob/main/docs/KNOWN-ISSUES.md) first. 请先查看已知问题；截图和日志中请去掉私人信息。"
+  - type: input
+    id: version
+    attributes:
+      label: App version and package / 版本与安装包
+      placeholder: "e.g. 0.2.1, mac-arm64 ZIP"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Your computer / 设备环境
+      description: "OS version, processor, display scaling, monitor setup / 系统版本、芯片、缩放与显示器情况"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce / 复现步骤
+      description: "What did you do, what did you expect, and what happened? / 做了什么、预期是什么、实际发生了什么？"
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or relevant logs / 截图或相关日志
+      description: "Optional. Remove private details. Windows Mini log: %TEMP%\\flowglass-widget.log / 可选，请勿上传私人计时记录。"
