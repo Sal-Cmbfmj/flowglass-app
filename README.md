@@ -27,7 +27,7 @@ These are early, unsigned test packages. macOS may show a developer-verification
 - **Focus and break modes.** Set focus sessions from 1–120 minutes and breaks from 1–60 minutes. A session already started keeps its original length.
 - **A floating Mini.** Keep a small hourglass on the desktop while the main window is tucked away.
 - **A seven-day history.** See focus rounds and time recorded each day. Ending a focus session early still counts as a round if time was spent; paused time is excluded.
-- **English and 简体中文.** Choose a language in Settings and save to apply it to both windows. Some Windows system-menu labels are still in Chinese.
+- **English and 简体中文.** Choose a language in Settings and save to apply it to both windows, including the Windows tray menu (since 0.2.2).
 - **Local records.** No account or cloud sync is needed.
 
 <img src="docs/images/mini-0.2.1.png" width="240" alt="Mini hourglass showing a 25-minute focus session">
