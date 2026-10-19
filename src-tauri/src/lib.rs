@@ -44,12 +44,56 @@ mod windows_shell {
         let _ = std::fs::write(&path, all);
     }
 
-    // 浮窗恢复入口：存在则拉回可见并置顶；静态配置创建失败时按原参数程序化重建。
+    // 浮窗恢复入口：存在则拉回可见并置顶；不在任何现存显示器内时夹回主屏；
+    // 静态配置创建失败时按原参数程序化重建。API 错误记入诊断日志（FG021-04）。
     pub fn show_widget(app: &tauri::AppHandle) {
         if let Some(w) = app.get_webview_window("widget") {
-            let _ = w.show();
-            let _ = w.set_always_on_top(true);
-            let _ = w.set_focus();
+            let mut errors: Vec<String> = Vec::new();
+            if let Err(e) = w.show() {
+                errors.push(format!("show:{e}"));
+            }
+            if let Err(e) = w.set_always_on_top(true) {
+                errors.push(format!("top:{e}"));
+            }
+            if let Err(e) = w.set_focus() {
+                errors.push(format!("focus:{e}"));
+            }
+            // 窗口可能停留在已断开的显示器区域：原点不在任何现存显示器内则拉回主屏
+            let mut off_screen = false;
+            match (w.outer_position(), w.available_monitors()) {
+                (Ok(pos), Ok(monitors)) => {
+                    let visible = monitors.iter().any(|m| {
+                        let mp = m.position();
+                        let ms = m.size();
+                        pos.x >= mp.x
+                            && pos.y >= mp.y
+                            && pos.x < mp.x + ms.width as i32
+                            && pos.y < mp.y + ms.height as i32
+                    });
+                    if !visible {
+                        off_screen = true;
+                        if let Err(e) = w.set_position(tauri::LogicalPosition::new(100.0, 120.0)) {
+                            errors.push(format!("reposition:{e}"));
+                        }
+                    }
+                }
+                (Err(e), _) => errors.push(format!("read position:{e}")),
+                _ => errors.push("read monitors failed".into()),
+            }
+            // 统一重申逻辑尺寸：防御高 DPI 下物理/逻辑错位导致的右下裁切
+            if let Err(e) = w.set_size(tauri::LogicalSize::new(240.0, 308.0)) {
+                errors.push(format!("size:{e}"));
+            }
+            let note = if errors.is_empty() {
+                if off_screen {
+                    "tray show-widget (existing, repositioned from off-screen)".to_string()
+                } else {
+                    "tray show-widget (existing)".to_string()
+                }
+            } else {
+                format!("tray show-widget (existing) errors=[{}]", errors.join("; "))
+            };
+            widget_log(app, &note);
         } else {
             let built = tauri::WebviewWindowBuilder::new(
                 app,
@@ -70,12 +114,47 @@ mod windows_shell {
                 Err(e) => widget_log(app, &format!("widget recreate FAILED: {e}")),
             }
         }
-        widget_log(app, "tray show-widget");
+    }
+
+    // 托盘菜单随 UI 语言重建（FG021-03：英文用户不应看到纯中文恢复/退出入口）。
+    pub fn rebuild_tray_menu(app: &tauri::AppHandle, lang: &str) {
+        use tauri::Manager;
+        let en = lang == "en";
+        let labels = if en {
+            ("Show Main Panel", "Show Mini", "Quit Flowglass")
+        } else {
+            ("显示主面板", "显示 Mini", "退出 Flowglass")
+        };
+        let items = (
+            MenuItem::with_id(app, "show", labels.0, true, None::<&str>),
+            MenuItem::with_id(app, "show_widget", labels.1, true, None::<&str>),
+            MenuItem::with_id(app, "quit", labels.2, true, None::<&str>),
+        );
+        let menu = match items {
+            (Ok(a), Ok(b), Ok(c)) => Menu::with_items(app, &[&a, &b, &c]),
+            _ => {
+                widget_log(app, "tray menu rebuild FAILED at items");
+                return;
+            }
+        };
+        match menu {
+            Ok(menu) => {
+                if let Some(tray) = app.tray_by_id("flowglass-tray") {
+                    if let Err(e) = tray.set_menu(Some(menu)) {
+                        widget_log(app, &format!("tray set_menu FAILED: {e}"));
+                    }
+                } else {
+                    widget_log(app, "tray flowglass-tray MISSING at rebuild");
+                }
+            }
+            Err(e) => widget_log(app, &format!("tray menu build FAILED: {e}")),
+        }
     }
 
     pub fn setup(app: &mut tauri::App) -> tauri::Result<()> {
         // 主窗口关闭为隐藏（见 on_window_event），Windows 没有 Dock：
-        // 托盘菜单提供「显示主面板」与「退出」两个入口，左键托盘直接恢复主面板。
+        // 托盘菜单提供「显示主面板」「显示 Mini」与「退出」入口，左键托盘直接恢复主面板。
+        // 初始按中文构建；前端启动/保存语言时经 set_ui_language 重建为对应语言。
         let show = MenuItem::with_id(app, "show", "显示主面板", true, None::<&str>)?;
         let show_widget_item = MenuItem::with_id(app, "show_widget", "显示 Mini", true, None::<&str>)?;
         let quit = MenuItem::with_id(app, "quit", "退出 Flowglass", true, None::<&str>)?;
@@ -134,10 +213,38 @@ fn double_click_interval_ms() -> u64 {
     { 500 }
 }
 
+// Mini 右键菜单「打开主页面」：恢复并聚焦主面板（隐藏/最小化后也能找回）。
+#[tauri::command]
+fn show_main_panel(app: tauri::AppHandle) {
+    use tauri::Manager;
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.unminimize();
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+}
+
+// 前端在启动与保存设置时上报 UI 语言（FG021-03）；Windows 托盘菜单随之重建。
+static UI_LANG_EN: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+#[tauri::command]
+fn set_ui_language(app: tauri::AppHandle, lang: String) {
+    let en = lang == "en";
+    UI_LANG_EN.store(en, std::sync::atomic::Ordering::Relaxed);
+    #[cfg(target_os = "windows")]
+    windows_shell::rebuild_tray_menu(&app, if en { "en" } else { "zh" });
+    #[cfg(not(target_os = "windows"))]
+    let _ = app;
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let builder = tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![double_click_interval_ms])
+        .invoke_handler(tauri::generate_handler![
+            double_click_interval_ms,
+            show_main_panel,
+            set_ui_language
+        ])
         .setup(|app| {
             #[cfg(target_os = "macos")]
             {

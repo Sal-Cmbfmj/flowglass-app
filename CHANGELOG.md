@@ -2,6 +2,15 @@
 
 User-facing changes are listed here. Installation files and checksums live in [Releases](https://github.com/Sal-Cmbfmj/flowglass-app/releases). Current unresolved problems are tracked in [known issues](docs/KNOWN-ISSUES.md).
 
+## 0.2.2 · 2026-10-19
+
+- Fixed: opening Settings via ⌘,/Ctrl+, now resets the language draft too — a cancelled draft can no longer leak back through the shortcut (FG021-01).
+- Fixed: the settings sheet was re-tightened vertically so it no longer overflows the mask with the language row (FG021-02).
+- Windows: the tray menu now follows the UI language (Show Main Panel / Show Mini / Quit); the shortcut hint shows Ctrl+, on Windows (FG021-03).
+- Windows: "Show Mini" detects a widget stranded outside existing monitors and pulls it back; per-API errors are logged to %TEMP%\flowglass-widget.log (FG021-04).
+- Mini's right-click menu gains "打开主页面 / Open Main Panel" as a cross-platform way to bring back the main window.
+- Adopted the review round's r4 readability layer (element-level sizing with per-language compensation).
+
 ## 0.2.1 · 2026-10-19
 
 - Enlarged the default main window to 990×621 so the interface is easier to read.

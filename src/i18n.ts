@@ -18,7 +18,15 @@ export const writeLang = (lang: Lang) => {
   localStorage.setItem(LANG_KEY, JSON.stringify(lang));
   // 与 timerStore 相同的广播模式：storage 事件只通知其他窗口，同窗口手动广播
   window.dispatchEvent(new Event("flowglass-lang"));
+  // 通知原生壳层（Windows 托盘菜单随语言重建）；Web 预览/无此命令的平台静默忽略
+  import("@tauri-apps/api/core")
+    .then(({ invoke }) => invoke("set_ui_language", { lang }))
+    .catch(() => {});
 };
+
+// 快捷键提示按平台输出（FG021-03：Windows 不显示 ⌘）
+export const isMacPlatform = (): boolean =>
+  /mac/i.test(navigator.platform || navigator.userAgent || "");
 
 export const subscribeLang = (onChange: () => void) => {
   const onStorage = (event: StorageEvent) => {
@@ -35,7 +43,7 @@ export const subscribeLang = (onChange: () => void) => {
 const zh = {
   subtitle: "专注于此刻",
   openSettings: "打开设置",
-  settingsTitle: "设置 (⌘,)",
+  settingsTitle: (mac: boolean): string => (mac ? "设置 (⌘,)" : "设置 (Ctrl+,)"),
   backToTimer: "返回计时器",
   back: "返回",
   focusArchive: "FOCUS ARCHIVE",
@@ -63,6 +71,7 @@ const zh = {
   minutesSmall: "分钟",
   resetTimer: "重置当前计时",
   resetAria: "重置计时器",
+  openMain: "打开主页面",
   widgetTitle: "桌面挂件",
   hintClick: "单击",
   hintClickDesc: "开始 / 暂停",
@@ -106,7 +115,7 @@ export type Strings = typeof zh;
 const en: Strings = {
   subtitle: "Focus on this moment",
   openSettings: "Open settings",
-  settingsTitle: "Settings (⌘,)",
+  settingsTitle: (mac: boolean): string => (mac ? "Settings (⌘,)" : "Settings (Ctrl+,)"),
   backToTimer: "Back to timer",
   back: "Back",
   focusArchive: "FOCUS ARCHIVE",
@@ -134,6 +143,7 @@ const en: Strings = {
   minutesSmall: "min",
   resetTimer: "Reset Current Timer",
   resetAria: "Reset timer",
+  openMain: "Open Main Panel",
   widgetTitle: "Widget",
   hintClick: "Click",
   hintClickDesc: "Start / Pause",

@@ -350,6 +350,17 @@ function Widget() {
             {mode === "focus" ? s.switchToBreakMenu : s.switchToFocusMenu}
           </button>
           <button onClick={() => { resetCurrent(); setMenuOpen(false); }}>{s.resetTimer}</button>
+          <button
+            onClick={() => {
+              // 从 Mini 恢复主面板（跨平台：macOS 等价 Dock 重开的补充入口）
+              import("@tauri-apps/api/core")
+                .then(({ invoke }) => invoke("show_main_panel"))
+                .catch(() => {});
+              setMenuOpen(false);
+            }}
+          >
+            {s.openMain}
+          </button>
         </div>
       )}
     </div>
