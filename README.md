@@ -4,21 +4,21 @@ A desktop Pomodoro timer with a little hourglass to keep you company.
 
 Start a focus session, take a break, and keep the time in sight with Mini, a floating hourglass that stays above your other windows. Flowglass pairs warm, quiet visuals with a simple timer and a seven-day focus history.
 
-[Download 0.2.1](https://github.com/Sal-Cmbfmj/flowglass-app/releases/tag/v0.2.1) · [Installation](docs/INSTALL.md) · [Known issues](docs/KNOWN-ISSUES.md) · [中文说明](#中文说明)
+[Download 0.2.2](https://github.com/Sal-Cmbfmj/flowglass-app/releases/tag/v0.2.2) · [Installation](docs/INSTALL.md) · [Known issues](docs/KNOWN-ISSUES.md) · [中文说明](#中文说明)
 
-![Flowglass 0.2.1 main window with focus and break controls](docs/images/main-0.2.1.png)
+![Flowglass 0.2.2 main window with focus and break controls](docs/images/main-0.2.2.png)
 
-*Version 0.2.1 preview. The history shown in this image is example data.*
+*Version 0.2.2 preview. The history shown in this image is example data.*
 
 ## Get started
 
-Choose a package from the [0.2.1 release](https://github.com/Sal-Cmbfmj/flowglass-app/releases/tag/v0.2.1). You do not need the “Source code” downloads to use the app.
+Choose a package from the [0.2.2 release](https://github.com/Sal-Cmbfmj/flowglass-app/releases/tag/v0.2.2). You do not need the “Source code” downloads to use the app.
 
 | Your computer | Choose the file ending in |
 | --- | --- |
-| Mac with Apple silicon — M1, M2 and later | `mac-arm64_20261019.zip` |
-| Mac with an Intel processor | `mac-x64_20261019.zip` or `.dmg` |
-| Windows PC with an x64 processor | `win-x64_20261019.exe` — experimental build |
+| Mac with Apple silicon — M1, M2 and later | `Flowglass_0.2.2_mac-arm64_20261019.zip` |
+| Mac with an Intel processor | `Flowglass_0.2.2_mac-x64_20261019.zip` or `.dmg` |
+| Windows PC with an x64 processor | `Flowglass_0.2.2_win-x64_20261019.exe` — experimental build |
 
 These are early, unsigned test packages. macOS may show a developer-verification warning; Windows may show a SmartScreen prompt. Read the [installation guide](docs/INSTALL.md) before opening the app. Compatibility testing is still limited, particularly on Intel Macs and Windows PCs.
 
@@ -47,7 +47,7 @@ Closing the main window hides it. On macOS, click the Dock icon to reopen it and
 
 ## What to expect from this beta
 
-0.2.1 adds more room for the interface, clearer Mini visibility, and Windows Mini recovery controls. It follows the English/Chinese interface introduced in 0.2.0.
+0.2.2 fixes the settings-sheet overflow and the language-draft leak found in review, adds Mini's "Open Main Panel" menu entry, and makes the Windows tray menu follow the UI language. It builds on the English/Chinese interface from 0.2.0 and the readability work of 0.2.1.
 
 There are a few known rough edges, including a language-draft issue when reopening Settings with a keyboard shortcut and a Settings panel that needs scrolling. See [known issues and workarounds](docs/KNOWN-ISSUES.md) before testing. The Windows package is cross-compiled from macOS; a full device and display-scaling compatibility matrix is not available yet.
 
@@ -73,7 +73,7 @@ MIT licensed — see [LICENSE](LICENSE). The icon was made with AI assistance. T
 
 ### 下载与使用
 
-前往 [0.2.1 下载页](https://github.com/Sal-Cmbfmj/flowglass-app/releases/tag/v0.2.1)，按电脑选择：M 系列 Mac 用 `mac-arm64`，Intel Mac 用 `mac-x64`，Windows x64 电脑用 `win-x64.exe`。**使用软件不需要下载 Source code，也不需要安装开发工具。**
+前往 [0.2.2 下载页](https://github.com/Sal-Cmbfmj/flowglass-app/releases/tag/v0.2.2)，按电脑选择：M 系列 Mac 用 `mac-arm64`，Intel Mac 用 `mac-x64`，Windows x64 电脑用 `win-x64.exe`。**使用软件不需要下载 Source code，也不需要安装开发工具。**
 
 目前为早期试用版，安装包未签名，Windows 包属于实验性交叉构建。首次打开前请看[安装指南](docs/INSTALL.md#中文安装说明)；Intel 与 Windows 的设备、系统和缩放兼容性仍需要更多真人测试。
 
@@ -86,7 +86,7 @@ MIT licensed — see [LICENSE](LICENSE). The icon was made with AI assistance. T
 
 ### 试用前知道这些
 
-0.2.1 改善了窗口大小、历史页间距和 Mini 可见性，也增加了 Windows Mini 的恢复入口。目前仍有语言草稿和设置弹窗等小问题，复现与临时处理方式见[已知问题](docs/KNOWN-ISSUES.md)。
+0.2.2 修复了评审发现的语言草稿回流与设置弹窗裁切问题，Mini 右键菜单新增「打开主页面」，Windows 托盘菜单随界面语言切换。已知边界见[已知问题](docs/KNOWN-ISSUES.md)。
 
 设置和记录保存在本机，无账号、无云同步，不上传计时记录。Google Fonts 字体加载可能联网，Windows 安装时也可能下载 WebView2。运行中的计时不会因为睡眠或退出而自动暂停；退出后没有独立后台提醒。记录最多保留 5,000 条，目前没有导出功能。
 
